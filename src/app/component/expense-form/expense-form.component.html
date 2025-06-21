@@ -1,0 +1,54 @@
+<form (ngSubmit)="onSubmit()" #expenseForm="ngForm">
+    <div style="width: 400px;">
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="date">Date: </label></div>
+            <div class="valuediv">
+                <p-datepicker [(ngModel)]="expense.date" inputId="date" name="date" required />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="payee">Payee: </label></div>
+            <div class="valuediv">
+                <p-select [options]="payees" [(ngModel)]="expense.payee" name="payee" optionLabel="name" required
+                (onChange)="loadPayeeDefaults()" [filter]="true" filterBy="name" class="selector"/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="account">Account: </label></div>
+            <div class="valuediv">
+                <p-select [options]="accounts" [(ngModel)]="expense.account" name="account" optionLabel="name" required class="selector"/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="category">Category: </label></div>
+            <div class="valuediv">
+                <p-select [options]="categories" [(ngModel)]="category" name="category" optionLabel="name"
+                    (onChange)="loadSubs()" required class="selector"/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="subcategory">Subcategory: </label></div>
+            <div class="valuediv">
+                <p-select [options]="subcategories" [(ngModel)]="expense.subcategory" name="subcategory"
+                    optionLabel="name" required class="selector"/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="price">Amount: </label></div>
+            <div class="valuediv"><p-inputnumber [(ngModel)]="expense.amount" inputId="amount" mode="decimal"
+                    [minFractionDigits]="2" [maxFractionDigits]="2" name="amount" required /></div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="notes">Notes: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="expense.notes" name="notes" />
+            </div>
+        </div>
+
+        <br />
+        <div style="text-align: center;">
+            <p-button type="submit" [disabled]="!expenseForm.form.valid">Save</p-button>
+            <p-button label="Back/Cancel" (click)="onCancel()" />
+        </div>
+    </div>
+</form>

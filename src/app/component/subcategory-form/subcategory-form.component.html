@@ -1,0 +1,37 @@
+
+<form (ngSubmit)="onSubmit()" #payeeForm="ngForm">
+    <div style="width: 500px;">
+        
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="id">Id: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="subcategory.id" name="id" [disabled]="editMode"/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="name">Name: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="subcategory.name" name="name" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="category">Category: </label></div>
+            <div class="valuediv">
+                <p-select [options]="categories" [(ngModel)]="subcategory.category" name="category" optionLabel="name"
+                    required class="selector"/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="budget">Budget: </label></div>
+            <div class="valuediv"><p-inputnumber [(ngModel)]="subcategory.budget" inputId="budget" mode="decimal"
+                    [minFractionDigits]="2" [maxFractionDigits]="2" name="budget" />
+            <p-button label="Clear" (onClick)="subcategory.budget = null" size="small" severity="info" />
+            </div>
+        </div>
+        <br />
+        <div style="text-align: center;">
+            <p-button type="submit" [disabled]="!payeeForm.form.valid">Save</p-button>
+            <p-button label="Back/Cancel" (click)="onCancel()" severity="contrast"/>
+        </div>
+    </div>
+</form>

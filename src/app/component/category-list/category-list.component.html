@@ -1,0 +1,51 @@
+
+<p-button [routerLink]="['/categoryForm']" label="New Category" size="small"/>
+<p-button [routerLink]="['/subcategoryForm']" label="New Subcategory" size="small"/>
+<table class="categories">
+    <!--Header-->
+    <tr>
+        <th>Category</th>
+        <th>Subcategory</th>
+        <th>Budget</th>
+        <th></th>
+        <th>In Use</th>
+    </tr>
+
+    @for (category of categories; track $index) {
+        <tr class="categoryRow">
+            <td>{{category.name}}</td>
+            <td></td>
+            <td class="currency">{{category.budget| currency: 'USD'}}</td>
+            <td>
+                <p-button [routerLink]="['/categoryForm', category.id]" severity="info" size="small"
+                [pTooltip]="'Edit ' + category.name"><i class="pi pi-pencil"></i></p-button>
+            </td>
+            <td>
+                @if(category.inUse){<i class="pi pi-lock"></i>}
+                @else {
+                    <p-button (click)="confirmDeleteCategory(category.id!,category.name!, $event)" 
+                     [pTooltip]="'Delete ' + category.name"
+                    severity="danger" size="small">
+                    <i class="pi pi-trash"></i></p-button>}
+            </td>
+        </tr>
+        @for (subcat of subCategoryMap[category.id!]; track $index){
+            <tr>
+                <td></td>
+                <td>{{subcat.name}}</td>
+                <td class="currency">{{subcat.budget| currency: 'USD'}}</td>
+                <td>
+                    <p-button [routerLink]="['/subcategoryForm', subcat.id]" severity="info" size="small"
+                    [pTooltip]="'Edit ' + subcat.name"><i class="pi pi-pencil"></i></p-button>
+                </td>
+                <td>
+                    @if(subcat.inUse){<i class="pi pi-lock"></i>}
+                    @else {
+                        <p-button (click)="confirmDeleteSubcategory(subcat.id!, subcat.name!, $event)" 
+                        [pTooltip]="'Delete ' + subcat.name"
+                        severity="danger" size="small"><i class="pi pi-trash"></i></p-button>}
+                </td>
+            </tr>
+        }
+    }
+</table>

@@ -1,0 +1,58 @@
+<div class="card">
+    <h1>Budget Report for {{report.month}} {{report.year}}</h1>
+    <table class="report">
+        <!--Header-->
+        <tr>
+            <th>Category</th>
+            <th>Subcategory</th>
+            <th>Budget</th>
+            <th>Spent</th>
+            <th>Remain/Over</th>
+        </tr>
+        <!--Month Totals-->
+        <tr>
+            <td>All</td>
+            <td></td>
+            <td></td>
+            <td class="currency">{{report.total| currency: 'USD'}}</td>
+            <td></td>
+        </tr>
+        @for (category of report.categories; track $index; let idx = $index) {
+        <!--Category Totals-->
+        <tr class="categoryRow">
+            <td>{{category.name}}</td>
+            <td></td>
+            <td class="currency">{{category.budget| currency: 'USD'}}</td>
+            <td class="currency">{{category.total| currency: 'USD'}}</td>
+            @if (category.total && category.budget) {
+            <td [ngClass]="{'budgetCellOver': (category.budget < category.total), 'currency': true}">
+                {{(category.budget - category.total) | currency: 'USD'}}</td>
+            }
+            @else if (category.budget) {
+            <td [ngClass]="{'currency': true}">
+                {{category.budget | currency: 'USD'}}</td>
+            }
+            @else {<td></td>}
+
+        </tr>
+        @for (subcategory of category.subcategories; track $index; let idx = $index) {
+        <!--Subcategory Totals-->
+        <tr class="subcategoryRow">
+            <td></td>
+            <td>{{subcategory.name}}</td>
+            <td class="currency">{{subcategory.budget| currency: 'USD'}}</td>
+            <td class="currency">{{subcategory.total| currency: 'USD'}}</td>
+            @if (subcategory.total && subcategory.budget) {
+            <td [ngClass]="{'budgetCellOver': (subcategory.budget < subcategory.total), 'currency': true}">
+                {{(subcategory.budget - subcategory.total) | currency: 'USD'}}</td>
+            }
+            @else if (subcategory.budget) {
+            <td [ngClass]="{'currency': true}">
+                {{subcategory.budget | currency: 'USD'}}</td>
+            }
+            @else {<td></td>}
+        </tr>
+        }
+        }
+    </table>
+</div>

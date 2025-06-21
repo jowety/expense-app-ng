@@ -1,0 +1,36 @@
+<p-button (click)="newPayee()" label="New Payee" size="small"/>
+
+<p-table [value]="payees" [paginator]="false"
+        [tableStyle]="{ 'min-width': '50rem' }" >
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
+                <th>Description</th>
+                <th pSortableColumn="accountDefault.name">Account Def <p-sortIcon field="accountDefault.name" /></th>
+                <th pSortableColumn="categoryDefault.name">Category Def <p-sortIcon field="categoryDefault.name" /></th>
+                <th pSortableColumn="subcategoryDefault.name">Subcategory Def <p-sortIcon field="subcategoryDefault.name" /></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-payee>
+            <tr>                
+                <td>{{ payee.name }}</td>
+                <td>{{ payee.description }}</td>
+                <td>{{ payee.accountDefault?.name }}</td>
+                <td>{{ payee.categoryDefault?.name }}</td>
+                <td>{{ payee.subcategoryDefault?.name }}</td>
+                <td>
+                    <p-button [routerLink]="['/payeeForm', payee.id]" 
+                    [pTooltip]="'Edit ' + payee.name"severity="info" size="small">
+                        <i class="pi pi-pencil"></i>
+                    </p-button>
+                    @if(payee.inUse){<i class="pi pi-lock"></i>}
+                    @else{
+                        <p-button (click)="confirmDelete(payee.id, payee.name, $event)" 
+                        [pTooltip]="'Delete ' + payee.name" severity="danger" size="small">
+                            <i class="pi pi-trash"></i>
+                        </p-button>
+                    }
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>

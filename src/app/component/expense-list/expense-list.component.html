@@ -1,0 +1,85 @@
+<div class="card">
+    <div class="container">
+        <p-button (click)="newExpense()" label="New" size="small" pTooltip="New Expense"/>
+        <p-button (click)="clearFilters()" label="Clear" size="small" severity="contrast" pTooltip="Clear Filters"/>
+        <p-float-label >
+        <label for="month">Month:</label>
+        <p-select [options]="months" [(ngModel)]="expenseService.expenseFilters.month" (onChange)="monthChanged()" 
+            name="month" [showClear]="true" placeholder="Select"
+            styleClass="w-full" />
+        </p-float-label>
+        <span style="margin-left: 20px; background-color: lightyellow; font-weight: bold;
+        padding:8px; border: solid 1px grey;border-radius: 5px; margin-right: 50px">
+        Total: {{totalAmount | currency: 'USD'}}
+        </span>
+        <p-paginator (onPageChange)="pageChange($event)" [showCurrentPageReport]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" [first]="expenseService.expenseFilters.first"
+            [rows]="expenseService.expenseFilters.rows" [totalRecords]="total" [rowsPerPageOptions]="[10, 25, 50]" />
+    </div>
+@defer (when monthsLoaded) {
+    <p-table [value]="expenses" [paginator]="false" [lazy]="true" #myTable dataKey="id"
+        (onLazyLoad)="pageChange($event)" [sortField]="expenseService.expenseFilters.sortField" [sortOrder]="expenseService.expenseFilters.sortOrder">
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="date">Date <p-sortIcon field="date" /></th>
+                <th pSortableColumn="amount">Amount <p-sortIcon field="amount" /></th>
+                <th pSortableColumn="payee">Payee <p-sortIcon field="payee" display="menu" />
+                    <p-columnFilter field="payee" placeholder="Search by name" display="menu" 
+                        [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" />
+                </th>
+                <th pSortableColumn="account">Account <p-sortIcon field="account" />
+                    <p-columnFilter field="account" matchMode="equals" display="menu" 
+                        [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                        <ng-template #filter let-value let-filter="filterCallback">
+                            <p-select [(ngModel)]="expenseService.expenseFilters.account" [options]="accounts" 
+                            (onChange)="filter($event.value)"
+                                placeholder="Select One" styleClass="w-full" />
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th pSortableColumn="category">Category <p-sortIcon field="category" />
+                    <p-columnFilter field="category" matchMode="equals"  display="menu" [showMatchModes]="false"
+                        [showOperator]="false" [showAddButton]="false">
+                        <ng-template #filter let-value let-filter="filterCallback">
+                            <p-select [(ngModel)]="expenseService.expenseFilters.category" [options]="categories" 
+                            (onChange)="filter($event.value)"
+                                placeholder="Select One" styleClass="w-full" />
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th pSortableColumn="subcategory">Subcategory <p-sortIcon field="subcategory" />
+                    <p-columnFilter field="subcategory" matchMode="equals" display="menu"  [showMatchModes]="false"
+                        [showOperator]="false" [showAddButton]="false">
+                        <ng-template #filter let-value let-filter="filterCallback">
+                            <p-select [(ngModel)]="expenseService.expenseFilters.subcategory" [options]="subcategories"
+                                (onChange)="filter($event.value)" placeholder="Select One" styleClass="w-full" />
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                <th>Notes</th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-exp>
+            <tr>
+                <td>{{ exp.date | date:'shortDate' }}</td>
+                <td>{{ exp.amount | currency: 'USD'}}</td>
+                <td>{{ exp.payee }}</td>
+                <td>{{ exp.account }}</td>
+                <td>{{ exp.category }}</td>
+                <td>{{ exp.subcategory }}</td>
+                <td>{{ exp.notes }}</td>
+                <td>
+                    <p-button [routerLink]="['/expenseForm', exp.id]" 
+                    pTooltip="Edit" severity="info" size="small">
+                        <i class="pi pi-pencil"></i>
+                    </p-button>
+                    <p-button (click)="confirmDelete(exp, $event)" pTooltip="Delete" severity="danger" size="small">
+                        <i class="pi pi-trash"></i>
+                    </p-button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+    }
+</div>

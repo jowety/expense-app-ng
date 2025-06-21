@@ -1,0 +1,43 @@
+<form (ngSubmit)="onSubmit()" #payeeForm="ngForm">
+    <div style="width: 400px;">
+        
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="name">Name: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="payee.name" name="name" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="description">Description: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="payee.description" name="description" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="account">Default Account: </label></div>
+            <div class="valuediv">
+                <p-select [options]="accounts" [(ngModel)]="payee.accountDefault" name="account" optionLabel="name" required class="selector"/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="category">Default Category: </label></div>
+            <div class="valuediv">
+                <p-select [options]="categories" [(ngModel)]="payee.categoryDefault" name="category" optionLabel="name"
+                    (onChange)="loadSubs()" class="selector"/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="subcategory">Default Subcategory: </label></div>
+            <div class="valuediv">
+                <p-select [options]="subcategories" [(ngModel)]="payee.subcategoryDefault" name="subcategory"
+                    optionLabel="name" class="selector"/>
+            </div>
+        </div>
+
+        <br />
+        <div style="text-align: center;">
+            <p-button type="submit" [disabled]="!payeeForm.form.valid">Save</p-button>
+            <p-button label="Back/Cancel" (click)="onCancel()" />
+        </div>
+    </div>
+</form>

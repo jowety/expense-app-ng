@@ -1,0 +1,63 @@
+@import "primeicons/primeicons.css";
+
+/* You can add global styles to this file, and also import other style files */
+body{
+    font-family: Arial, Helvetica, sans-serif;
+}
+h1{
+    font-size: 16pt;
+}
+.rowdiv{
+    display: block;
+}
+.labeldiv{
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+}
+.valuediv{
+    display: inline;
+    margin-left: 10px;
+}
+.p-button{
+    margin-right: .5em;
+}
+td.label{
+    font-weight: bold;
+}
+table.report{
+    border-collapse: collapse;
+}
+table.categories{
+    border-collapse: collapse;
+}
+table.report th{
+    border: 1px solid;
+}
+table.report td{
+    border: 1px solid;
+}
+td.currency{
+    padding-left: 10px;
+    text-align: right;
+}
+.selector{
+    width: 220px;
+}
+tr.categoryRow{
+    background-color: #c2f1ef;
+}
+tr.subcategoryRow{
+}
+.container{
+    display: flex; /* Enables flexbox layout */
+  align-items: center; /* Aligns items vertically in the center */
+  justify-content: left; /* Distributes items with space between them */
+  /* Or use justify-content: flex-start;  for left alignment, flex-end for right alignment, etc. */
+}
+.budgetCellOk{
+    background-color: lightgreen;
+}
+.budgetCellOver{
+    background-color: palevioletred;
+}
