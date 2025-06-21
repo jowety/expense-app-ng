@@ -8,7 +8,6 @@ import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { TableModule, TableLazyLoadEvent, Table } from 'primeng/table';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
@@ -19,13 +18,12 @@ import { ExpenseService } from '../../service/expense.service';
 import { ExpenseView } from '../../model/expense-view';
 import { Search } from '../../model/search';
 import { ExpenseFilters } from '../../model/expense-filters';
-import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-expense-list',
   standalone: true,
   imports: [ButtonModule, FloatLabelModule, TableModule, CommonModule, RouterLink, TooltipModule,
-    ConfirmDialog, ToastModule, SelectModule, FormsModule, PaginatorModule],
+    ToastModule, SelectModule, FormsModule, PaginatorModule],
   templateUrl: './expense-list.component.html',
   styleUrl: './expense-list.component.scss'
 })
