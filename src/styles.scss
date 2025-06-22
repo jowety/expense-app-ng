@@ -12,12 +12,15 @@ h1{
 }
 .labeldiv{
     display: inline-block;
-    width: 100px;
+    width: 200px;
     text-align: right;
 }
 .valuediv{
     display: inline;
     margin-left: 10px;
+}
+.splitdiv{
+    border: 1px solid blue;
 }
 .p-button{
     margin-right: .5em;

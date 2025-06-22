@@ -37,6 +37,7 @@ export class ExpenseFormComponent {
   editId: string | null = null;
   isSplit: boolean = false;
   splits: Split[] = [];
+  total: number | null = null;
 
   constructor(private expenseService: ExpenseService, private router: Router, private messageService: MessageService) {
     this.editId = this.route.snapshot.paramMap.get('editId');
@@ -61,14 +62,47 @@ export class ExpenseFormComponent {
     });
   }
   onSubmit() {
-    // alert(JSON.stringify(this.expense));
-    this.expenseService.saveExpense(this.expense).subscribe(result => {
-      this.messageService.add({
-        severity: 'success', summary: 'Success',
-        detail: `Expense for $${this.expense.amount} to ${this.expense.payee!.name} saved!`
+    if (!this.isSplit) {
+      this.expenseService.saveExpense(this.expense).subscribe(result => {
+        this.messageService.add({
+          severity: 'success', summary: 'Success',
+          detail: `Expense for $${this.expense.amount} to ${this.expense.payee!.name} saved!`
+        });
+        this.router.navigate(['/expenseList']);
       });
-      this.router.navigate(['/expenseList']);
-    });
+    }
+    else {
+      if (this.expense.amount! <= 0) {
+        this.messageService.add({
+          severity: 'danger', summary: 'ERROR!',
+          detail: `Sum of splits is greater than total!`
+        });
+      }
+      else {
+        this.expenseService.saveExpense(this.expense).subscribe(result => {
+          this.messageService.add({
+            severity: 'success', summary: 'Success',
+            detail: `Expense for $${this.expense.amount} to ${this.expense.payee!.name} saved!`
+          });
+        });
+        for (let split of this.splits) {
+          let exp: Expense = new Expense();
+          exp.account = this.expense.account;
+          exp.date = this.expense.date;
+          exp.payee = this.expense.payee;
+          exp.subcategory = split.subcategory;
+          exp.amount = split.amount;
+          exp.notes = split.notes;
+          this.expenseService.saveExpense(exp).subscribe(result => {
+            this.messageService.add({
+              severity: 'success', summary: 'Success',
+              detail: `Expense for $${exp.amount} to ${exp.payee!.name} saved!`
+            });
+          });
+        }
+        this.router.navigate(['/expenseList']);
+      }
+    }
   }
   onCancel() {
     this.router.navigate(['/expenseList']);
@@ -80,6 +114,13 @@ export class ExpenseFormComponent {
       });
     }
   }
+  loadSplitSubs(index: number) {
+    if (this.splits[index].category) {
+      this.expenseService.getSubcategories(this.splits[index].category.id!).subscribe(data => {
+        this.splits[index].subcategories = data;
+      });
+    }
+  }
   loadPayeeDefaults() {
     if (this.expense.payee) {
       this.expense.account = this.expense.payee.accountDefault;
@@ -88,5 +129,26 @@ export class ExpenseFormComponent {
       this.expense.subcategory = this.expense.payee.subcategoryDefault;
     }
   }
-
+  enableSplit() {
+    this.isSplit = true;
+    this.splits.push(new Split());
+    this.total = this.expense.amount;
+  }
+  removeSplit() {
+    this.isSplit = false;
+    this.splits = [];
+    this.expense.amount = this.total;
+  }
+  updateRemain() {
+    if (this.total) {
+      this.expense.amount = this.total;
+      for (let split of this.splits) {
+        if (split.amount) this.expense.amount! -= split.amount;
+      }
+    }
+  }
+  check() {
+    console.log("Expense: " + JSON.stringify(this.expense));
+    console.log("Splits: " + JSON.stringify(this.splits));
+  }
 }
