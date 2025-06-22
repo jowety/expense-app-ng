@@ -17,6 +17,7 @@ import { Account } from '../../model/account';
 import { Payee } from '../../model/payee';
 import { Category } from '../../model/category';
 import { Subcategory } from '../../model/subcategory';
+import { Split } from '../../model/split';
 import { MessageService } from 'primeng/api';
 
 @Component({
@@ -34,6 +35,8 @@ export class ExpenseFormComponent {
   subcategories: Subcategory[] = [];
   private route = inject(ActivatedRoute);
   editId: string | null = null;
+  isSplit: boolean = false;
+  splits: Split[] = [];
 
   constructor(private expenseService: ExpenseService, private router: Router, private messageService: MessageService) {
     this.editId = this.route.snapshot.paramMap.get('editId');
