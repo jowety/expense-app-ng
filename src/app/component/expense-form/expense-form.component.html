@@ -34,12 +34,6 @@
                     optionLabel="name" required class="selector" dataKey="id"/>
             </div>
         </div>
-        <div class="rowdiv">
-            <div class="labeldiv"><label for="notes">{{isSplit? 'Primary ':''}}Notes: </label></div>
-            <div class="valuediv">
-                <input type="text" pInputText [(ngModel)]="expense.notes" name="notes" />
-            </div>
-        </div>
         @if (!isSplit) {
         <div class="rowdiv">
             <div class="labeldiv"><label for="amount">Amount: </label></div>
@@ -48,15 +42,22 @@
             <p-button label="Split" (onClick)="enableSplit()" size="small" severity="contrast"/>
         </div>
         }
-        @if (isSplit) {
         <div class="rowdiv">
+            <div class="labeldiv"><label for="notes">{{isSplit? 'Primary ':''}}Notes: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="expense.notes" name="notes" />
+            </div>
+        </div>
+        @if (isSplit) {
+        <div class="rowdiv" [ngStyle]="{'height':'35px'}">
             <div class="labeldiv"><label for="remain">Primary Amt: </label></div>
             <div class="valuediv">{{expense.amount | currency}}</div>
         </div>
         <div class="rowdiv">
             <div class="labeldiv"><label for="total">Total: </label></div>
             <div class="valuediv"><p-inputnumber [(ngModel)]="total" inputId="total" mode="decimal"
-                    [minFractionDigits]="2" [maxFractionDigits]="2" name="total" required /></div>
+                    [minFractionDigits]="2" [maxFractionDigits]="2" name="total" required 
+                    (ngModelChange)="updateRemain()"/></div>
             <p-button label="Unsplit" (onClick)="removeSplit()" size="small" severity="contrast"/>
         </div>
         }
@@ -80,7 +81,8 @@
                 <div class="rowdiv">
                     <div class="labeldiv"><label for="splitamount">Split {{$index + 1}} Amount: </label></div>
                     <div class="valuediv"><p-inputnumber [(ngModel)]="split.amount" inputId="splitamount" mode="decimal"
-                            [minFractionDigits]="2" [maxFractionDigits]="2" name="splitamount" required (ngModelChange)="updateRemain()"/></div>
+                            [minFractionDigits]="2" [maxFractionDigits]="2" name="splitamount" required 
+                            (ngModelChange)="updateRemain()"/></div>
                 </div>
                 <div class="rowdiv">
                     <div class="labeldiv"><label for="notes">Split {{$index + 1}} Notes: </label></div>
@@ -98,6 +100,6 @@
             <p-button type="submit" [disabled]="!expenseForm.form.valid" severity="success">Save</p-button>
             <p-button label="Back/Cancel" (click)="onCancel()" severity="warn"/>
         </div>
-        <p-button label="check" (onClick)="check()" />
+        <!--<p-button label="check" (onClick)="check()" />-->
     </div>
 </form>
