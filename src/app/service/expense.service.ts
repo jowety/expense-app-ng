@@ -31,6 +31,7 @@ export class ExpenseService {
 		console.log("ExpenseService constructor");
 	 }
 
+	//Expenses 
 	public getExpenseViews(search:Search): Observable<SearchResult> {
 		return this.http.post<SearchResult>(this.expenseViewUrl + "/search", search);
 	}
@@ -46,11 +47,23 @@ export class ExpenseService {
 	public deleteExpense(id: number) {
 		return this.http.delete(this.expenseUrl + "/" + id);
 	}
-
+	//Accounts
 	public getAccounts(): Observable<Account[]> {
 		return this.http.get<Account[]>(this.accountUrl);
 	}
-
+	public getAccount(id:string): Observable<Account> {
+		return this.http.get<Account>(this.accountUrl + "/" + id);
+	}
+	public saveNewAccount(account: Account): Observable<Account> {
+		return this.http.post<Account>(this.accountUrl, account);
+	}
+	public updateAccount(account: Account): Observable<Account> {
+		return this.http.put<Account>(this.accountUrl, account);
+	}
+	public deleteAccount(id: string) {
+		return this.http.delete(this.accountUrl + "/" + id);
+	}
+	//Payees
 	public getPayees(): Observable<Payee[]> {
 		return this.http.get<Payee[]>(this.payeeUrl);
 	}
@@ -63,7 +76,7 @@ export class ExpenseService {
 	public deletePayee(id: number) {
 		return this.http.delete(this.payeeUrl + "/" + id);
 	}
-
+	//Categories
 	public getCategories(): Observable<Category[]> {
 		return this.http.get<Category[]>(this.categoryUrl);
 	}
@@ -79,6 +92,7 @@ export class ExpenseService {
 	public deleteCategory(id: string) {
 		return this.http.delete(this.categoryUrl + "/" + id);
 	}
+	//Subcategories
 	public getSubcategories(categoryId?: string): Observable<Subcategory[]> {
 		if(categoryId){
 			return this.http.get<Subcategory[]>(this.subcategoryUrl, { params: { 'categoryId': categoryId } });
@@ -98,7 +112,7 @@ export class ExpenseService {
 	public deleteSubcategory(id: string) {
 		return this.http.delete(this.subcategoryUrl + "/" + id);
 	}
-
+	//Reports
 	public getExpenseReport(year: number) {
 		return this.http.get<ExpenseReport>(this.reportUrl+ "/expense", { params: { 'year': year } });
 	}

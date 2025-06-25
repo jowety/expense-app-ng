@@ -98,7 +98,7 @@
         <br />
         <div style="text-align: center;">
             <p-button type="submit" [disabled]="!expenseForm.form.valid" severity="success">Save</p-button>
-            <p-button label="Back/Cancel" (click)="onCancel()" severity="warn"/>
+            <p-button label="Back/Cancel" [routerLink]="['/expenseList']" severity="warn"/>
         </div>
         <!--<p-button label="check" (onClick)="check()" />-->
     </div>

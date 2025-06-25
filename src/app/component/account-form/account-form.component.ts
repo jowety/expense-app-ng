@@ -9,27 +9,28 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumber } from 'primeng/inputnumber';
 
 import { ExpenseService } from '../../service/expense.service';
-import { Category } from '../../model/category';
+import { Account } from '../../model/account';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-category-form',
+  selector: 'app-account-form',
   imports: [SelectModule, FormsModule, ButtonModule, InputTextModule, InputNumber, RouterLink],
-  templateUrl: './category-form.component.html',
-  styleUrl: './category-form.component.scss'
+  templateUrl: './account-form.component.html',
+  styleUrl: './account-form.component.scss'
 })
-export class CategoryFormComponent {
-  category: Category = new Category();
+export class AccountFormComponent {
+  account: Account = new Account();
+  types: string[] = ["CASH", "CREDIT"];
   private route = inject(ActivatedRoute);
   editId: string | null = null;
   editMode: boolean = false;
 
   constructor(private expenseService: ExpenseService, private router: Router,
-    private confirmationService: ConfirmationService, private messageService: MessageService ) {
+    private confirmationService: ConfirmationService, private messageService: MessageService) {
     this.editId = this.route.snapshot.paramMap.get('editId');
     if (this.editId) {
-      this.expenseService.getCategory(this.editId).subscribe(data => {
-        this.category = data;
+      this.expenseService.getAccount(this.editId).subscribe(data => {
+        this.account = data;
         this.editMode = true;
       })
     }
@@ -37,16 +38,17 @@ export class CategoryFormComponent {
 
   onSubmit() {
     if (this.editMode) {
-      this.expenseService.updateCategory(this.category).subscribe(result => {
-        this.messageService.add({ severity: 'success', summary: 'Updated', detail: `Category updated`, life: 3000 });
-        this.router.navigate(['/categoryList']);
+      this.expenseService.updateAccount(this.account).subscribe(result => {
+        this.messageService.add({ severity: 'success', summary: 'Updated', detail: `Account updated`, life: 3000 });
+        this.router.navigate(['/accountList']);
       });
     }
     else {
-      this.expenseService.saveNewCategory(this.category).subscribe(result => {
-        this.messageService.add({ severity: 'success', summary: 'Saved', detail: `Category saved`, life: 3000 });
-        this.router.navigate(['/categoryList']);
+      this.expenseService.saveNewAccount(this.account).subscribe(result => {
+        this.messageService.add({ severity: 'success', summary: 'Saved', detail: `Account saved`, life: 3000 });
+        this.router.navigate(['/accountList']);
       });
     }
   }
+
 }

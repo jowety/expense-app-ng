@@ -33,6 +33,7 @@ export class AppComponent {
         ]},
       {label: "Setup", 
         items: [
+          {label: 'Accounts', routerLink: '/accountList'},
           {label: 'Categories', routerLink: '/categoryList'},
           {label: 'Payees', routerLink: '/payeeList'}
         ]

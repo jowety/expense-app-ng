@@ -1,6 +1,6 @@
 <div class="card">
     <div class="container">
-        <p-button (click)="newExpense()" label="New" size="small" pTooltip="New Expense"/>
+        <p-button [routerLink]="['/expenseForm']" label="New" size="small" pTooltip="New Expense"/>
         <p-button (click)="clearFilters()" label="Clear" size="small" severity="contrast" pTooltip="Clear Filters"/>
         <p-float-label >
         <label for="month">Month:</label>

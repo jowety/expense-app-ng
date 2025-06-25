@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Account } from '../../model/account';
 import { Router, RouterLink } from '@angular/router';
 
 import { ButtonModule } from 'primeng/button';
@@ -8,32 +9,35 @@ import { TableModule} from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { ExpenseService } from '../../service/expense.service';
-import { Payee } from '../../model/payee';
 
 @Component({
-  selector: 'app-payee-list',
+  selector: 'app-account-list',
   imports: [TableModule, ToastModule, ButtonModule, RouterLink, TooltipModule],
-  templateUrl: './payee-list.component.html',
-  styleUrl: './payee-list.component.scss'
+  templateUrl: './account-list.component.html',
+  styleUrl: './account-list.component.scss'
 })
-export class PayeeListComponent {
-  payees: Payee[] = [];
-
+export class AccountListComponent {
+  accounts: Account[] = [];
   constructor(private expenseService: ExpenseService, private router: Router,
     private confirmationService: ConfirmationService, private messageService: MessageService) { }
 
-  ngOnInit() {
-    this.loadData();
+  showSuccess() {
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Message Content' });
+    }
+
+  ngOnInit() {  
+    this.getData();
   }
-  loadData(){
-    this.expenseService.getPayees().subscribe(data => {
-      this.payees = data;
+  getData(){  
+    this.expenseService.getAccounts().subscribe(data => {
+      this.accounts = data;
     });
   }
-  confirmDelete(id: number, name:string, event: Event) {
+  
+  confirmDelete(id: string, name:string, event: Event) {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
-      message: `Do you want to delete the ${name} Payee?`,
+      message: `Do you want to delete the ${name} Account?`,
       icon: 'pi pi-info-circle',
       rejectButtonProps: {
         label: 'Cancel',
@@ -45,8 +49,8 @@ export class PayeeListComponent {
         severity: 'danger'
       },
       accept: () => {
-        this.expenseService.deletePayee(id).subscribe(data => {
-          this.loadData();
+        this.expenseService.deleteAccount(id).subscribe(data => {
+          this.getData();
           this.messageService.add({ severity: 'success', summary: 'Success', detail: `Payee ${name} deleted`, life: 3000 });
         });
       }

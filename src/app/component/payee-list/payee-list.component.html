@@ -1,4 +1,4 @@
-<p-button (click)="newPayee()" label="New Payee" size="small"/>
+<p-button [routerLink]="['/payeeForm']" label="New Payee" size="small"/>
 
 <p-table [value]="payees" [paginator]="false"
         [tableStyle]="{ 'min-width': '50rem' }" >

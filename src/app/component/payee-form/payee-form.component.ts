@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 
 import { SelectModule } from 'primeng/select';
@@ -16,7 +16,7 @@ import { Subcategory } from '../../model/subcategory';
 
 @Component({
   selector: 'app-payee-form',
-  imports: [SelectModule, FormsModule, ButtonModule, InputTextModule],
+  imports: [SelectModule, FormsModule, ButtonModule, InputTextModule, RouterLink],
   templateUrl: './payee-form.component.html',
   styleUrl: './payee-form.component.scss'
 })
@@ -65,8 +65,5 @@ export class PayeeFormComponent {
       this.messageService.add({ severity: 'success', summary: 'Success', detail: `Payee ${this.payee.name} ${action}!`, life: 3000 });
       this.router.navigate(['/payeeList']);
     });
-  }
-  onCancel() {
-    this.router.navigate(['/payeeList']);
   }
 }

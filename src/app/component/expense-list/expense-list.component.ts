@@ -83,9 +83,6 @@ export class ExpenseListComponent {
       this.monthsLoaded = true;
     })
   }
-  newExpense() {
-    this.router.navigate(['/expenseForm'])
-  }
   yearChanged() {
     this.getMonths(false);
   }

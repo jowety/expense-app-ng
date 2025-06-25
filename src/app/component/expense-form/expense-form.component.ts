@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 
@@ -22,7 +22,7 @@ import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-expense-form',
-  imports: [FormsModule, InputNumber, InputTextModule, DatePicker, CommonModule, ButtonModule, SelectModule, MessageModule],
+  imports: [FormsModule, InputNumber, InputTextModule, DatePicker, CommonModule, ButtonModule, SelectModule, MessageModule, RouterLink],
   templateUrl: './expense-form.component.html',
   styleUrl: './expense-form.component.scss'
 })
@@ -44,7 +44,7 @@ export class ExpenseFormComponent {
     if (this.editId) {
       this.expenseService.getExpense(this.editId).subscribe(data => {
         this.expense = data;
-        this.expense.date = new Date(data.date as string);
+        this.expense.date = new Date((data.date as string) + "T00:00:00");
         this.category = this.expense.subcategory!.category;
         this.loadSubs();
       })
@@ -61,7 +61,11 @@ export class ExpenseFormComponent {
       this.categories = data;
     });
   }
+  toDateString(d:Date): string{
+    return `${d.getFullYear()}-${d.getMonth()}-${d.getDay()}`;
+  }
   onSubmit() {
+    this.expense.date = (this.expense.date as Date).toISOString().slice(0, 10);
     if (!this.isSplit) {
       this.expenseService.saveExpense(this.expense).subscribe(result => {
         this.messageService.add({
@@ -103,9 +107,6 @@ export class ExpenseFormComponent {
         this.router.navigate(['/expenseList']);
       }
     }
-  }
-  onCancel() {
-    this.router.navigate(['/expenseList']);
   }
   loadSubs() {
     if (this.category) {

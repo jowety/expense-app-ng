@@ -24,7 +24,7 @@
         <br />
         <div style="text-align: center;">
             <p-button type="submit" [disabled]="!payeeForm.form.valid">Save</p-button>
-            <p-button label="Back/Cancel" (click)="onCancel()" severity="contrast"/>
+            <p-button label="Back/Cancel" [routerLink]="['/categoryList']" severity="contrast"/>
         </div>
     </div>
 </form>

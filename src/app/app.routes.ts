@@ -8,6 +8,8 @@ import { CategoryListComponent } from './component/category-list/category-list.c
 import { CategoryFormComponent } from './component/category-form/category-form.component';
 import { SubcategoryFormComponent } from './component/subcategory-form/subcategory-form.component';
 import { BudgetReportComponent } from './component/budget-report/budget-report.component';
+import { AccountFormComponent } from './component/account-form/account-form.component';
+import { AccountListComponent } from './component/account-list/account-list.component';
 
 export const routes: Routes = [
 
@@ -19,6 +21,9 @@ export const routes: Routes = [
 	{ path: 'expenseReport', component: ExpenseReportComponent, title: "Monthly Report" },
 	{ path: 'budgetReport', component: BudgetReportComponent, title: "Budget Report" },
 	
+	{ path: 'accountList', component: AccountListComponent, title: "Accounts" },
+	{ path: 'accountForm', component: AccountFormComponent, title: "Account Edit"  },
+	{ path: 'accountForm/:editId', component: AccountFormComponent, title: "Account Edit"  },
 	{ path: 'payeeList', component: PayeeListComponent, title: "Payees" },
 	{ path: 'payeeForm', component: PayeeFormComponent, title: "Payee Edit"  },
 	{ path: 'payeeForm/:editId', component: PayeeFormComponent, title: "Payee Edit"  },

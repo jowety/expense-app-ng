@@ -1,0 +1,30 @@
+
+<form (ngSubmit)="onSubmit()" #payeeForm="ngForm">
+    <div style="width: 500px;">
+        
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="id">Id: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="account.id" name="id" [disabled]="editMode"/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="name">Name: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="account.name" name="name" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="type">Type: </label></div>
+            <div class="valuediv">
+                <p-select [options]="types" [(ngModel)]="account.type" name="type"
+                    required class="selector"/>
+            </div>
+        </div>
+        <br />
+        <div style="text-align: center;">
+            <p-button type="submit" [disabled]="!payeeForm.form.valid">Save</p-button>
+            <p-button label="Back/Cancel" [routerLink]="['/accountList']" severity="contrast"/>
+        </div>
+    </div>
+</form>

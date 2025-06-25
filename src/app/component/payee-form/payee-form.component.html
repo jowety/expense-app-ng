@@ -37,7 +37,7 @@
         <br />
         <div style="text-align: center;">
             <p-button type="submit" [disabled]="!payeeForm.form.valid">Save</p-button>
-            <p-button label="Back/Cancel" (click)="onCancel()" />
+            <p-button label="Back/Cancel" [routerLink]="['/payeeList']" />
         </div>
     </div>
 </form>
