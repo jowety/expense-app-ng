@@ -24,7 +24,7 @@
                     <td class="currency">{{category.monthTotals[month] | currency: 'USD'}}</td>
                 }
             </tr>
-            @for (subcategory of category.subcategories; track $index; let idx = $index) {
+            @for (subcategory of category.subs; track $index; let idx = $index) {
                 <!--Subcategory Totals-->
                 <tr class="subcategoryRow">
                     <td></td>

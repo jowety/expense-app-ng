@@ -6,6 +6,7 @@
     <tr>
         <th>Category</th>
         <th>Subcategory</th>
+        <th>Description</th>
         <th>Budget</th>
         <th></th>
         <th>In Use</th>
@@ -15,6 +16,7 @@
         <tr class="categoryRow">
             <td>{{category.name}}</td>
             <td></td>
+            <td>{{category.description}}</td>
             <td class="currency">{{category.budget| currency: 'USD'}}</td>
             <td>
                 <p-button [routerLink]="['/categoryForm', category.id]" severity="info" size="small"
@@ -33,6 +35,7 @@
             <tr>
                 <td></td>
                 <td>{{subcat.name}}</td>
+                <td>{{subcat.description}}</td>
                 <td class="currency">{{subcat.budget| currency: 'USD'}}</td>
                 <td>
                     <p-button [routerLink]="['/subcategoryForm', subcat.id]" severity="info" size="small"

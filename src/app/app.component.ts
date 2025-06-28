@@ -14,7 +14,7 @@ import { ExpenseService } from './service/expense.service';
   imports: [RouterOutlet, ButtonModule, Menubar, TabsModule, CommonModule, ConfirmDialog, ToastModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  providers: [ConfirmationService, MessageService]
+  providers: [ConfirmationService]
 })
 export class AppComponent {
   title = 'Expense Manager';
@@ -28,8 +28,9 @@ export class AppComponent {
       {label: 'Expenses', routerLink: '/expenseList'},
       {label: 'Reports', 
         items:[
-          {label: 'Monthly', routerLink: '/expenseReport'},
-          {label: 'Budget', routerLink: '/budgetReport'}
+          {label: 'Category Totals', routerLink: '/expenseReport'},
+          {label: 'Payee/Account Totals', routerLink: '/fieldReport'},
+          {label: 'Budget Report', routerLink: '/budgetReport'}
         ]},
       {label: "Setup", 
         items: [

@@ -1,5 +1,5 @@
 <form (ngSubmit)="onSubmit()" #payeeForm="ngForm">
-    <div style="width: 400px;">
+    <div style="width: 600px;">
         
         <div class="rowdiv">
             <div class="labeldiv"><label for="name">Name: </label></div>
@@ -37,7 +37,7 @@
         <br />
         <div style="text-align: center;">
             <p-button type="submit" [disabled]="!payeeForm.form.valid">Save</p-button>
-            <p-button label="Back/Cancel" [routerLink]="['/payeeList']" />
+            <p-button label="Back/Cancel" (onClick)="navigateBack()" />
         </div>
     </div>
 </form>

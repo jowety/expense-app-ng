@@ -1,0 +1,29 @@
+<div class="card">
+    <h1>Expense Report for {{report.year}}</h1>
+    <p-selectbutton [options]="fields" [(ngModel)]="field" aria-labelledby="basic" (onChange)="load()" />
+    <table class="report">
+        <!--Header-->
+        <tr>
+            <th>{{field}}</th>
+            @for (month of report.months; track $index) {
+                <th>{{month}}</th>
+            }
+        </tr>
+        <!--Month Totals-->
+        <tr class="categoryRow">
+            <td>All</td>
+            @for (month of report.months; track $index) {
+                <td class="currency">{{report.monthTotals[month] | currency: 'USD'}}</td>
+            }
+        </tr>
+        @for (fieldVal of report.fields; track $index; let idx = $index) {
+            <!--Category Totals-->
+            <tr>
+                <td>{{fieldVal.name}}</td>
+                @for (month of report.months; track $index) {
+                    <td class="currency">{{fieldVal.monthTotals[month] | currency: 'USD'}}</td>
+                }
+            </tr>
+        }
+    </table>
+</div>

@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
@@ -28,8 +29,9 @@ export class PayeeFormComponent {
   private route = inject(ActivatedRoute);
   editId: string | null = null;
   editMode: boolean = false;
+  returnPage: string | null = null;
 
-  constructor(private expenseService: ExpenseService, private router: Router,
+  constructor(private expenseService: ExpenseService, private router: Router, private location: Location,
     private confirmationService: ConfirmationService, private messageService: MessageService) {
     this.editId = this.route.snapshot.paramMap.get('editId');
     if (this.editId) {
@@ -49,6 +51,9 @@ export class PayeeFormComponent {
     this.expenseService.getCategories().subscribe(data => {
       this.categories = data;
     });
+    this.route.queryParams.subscribe((params) => {
+      this.returnPage = params['return'] || null;
+    });
   }
   loadSubs() {
     if (this.payee.categoryDefault) {
@@ -61,9 +66,19 @@ export class PayeeFormComponent {
   onSubmit() {
     // alert(JSON.stringify(this.expense));
     this.expenseService.savePayee(this.payee).subscribe(result => {
+      this.payee = result;
       let action:string = this.editMode? 'updated': 'created';
       this.messageService.add({ severity: 'success', summary: 'Success', detail: `Payee ${this.payee.name} ${action}!`, life: 3000 });
-      this.router.navigate(['/payeeList']);
+      this.navigateBack();
     });
+  }
+
+  navigateBack(){
+    if(this.returnPage){
+      if(this.payee.id)
+        this.router.navigate([this.returnPage], {queryParams: {payeeId: this.payee.id}});
+      else this.router.navigate([this.returnPage]);
+    }
+    else this.location.back();
   }
 }

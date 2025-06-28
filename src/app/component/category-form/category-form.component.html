@@ -5,13 +5,19 @@
         <div class="rowdiv">
             <div class="labeldiv"><label for="id">Id: </label></div>
             <div class="valuediv">
-                <input type="text" pInputText [(ngModel)]="category.id" name="id" [disabled]="editMode"/>
+                <input type="text" pInputText [(ngModel)]="category.id" name="id" [disabled]="editMode" required/>
             </div>
         </div>
         <div class="rowdiv">
             <div class="labeldiv"><label for="name">Name: </label></div>
             <div class="valuediv">
-                <input type="text" pInputText [(ngModel)]="category.name" name="name" />
+                <input type="text" pInputText [(ngModel)]="category.name" name="name" required/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="desc">Description: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="category.description" name="desc" />
             </div>
         </div>
         <div class="rowdiv">

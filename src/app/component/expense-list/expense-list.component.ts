@@ -13,6 +13,8 @@ import { TableModule, TableLazyLoadEvent, Table } from 'primeng/table';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { SelectModule } from 'primeng/select';
 import { FilterMetadata } from 'primeng/api';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 import { ExpenseService } from '../../service/expense.service';
 import { ExpenseView } from '../../model/expense-view';
@@ -23,7 +25,7 @@ import { ExpenseFilters } from '../../model/expense-filters';
   selector: 'app-expense-list',
   standalone: true,
   imports: [ButtonModule, FloatLabelModule, TableModule, CommonModule, RouterLink, TooltipModule,
-    ToastModule, SelectModule, FormsModule, PaginatorModule],
+    ToastModule, SelectModule, FormsModule, PaginatorModule, ToggleButtonModule, ToggleSwitchModule],
   templateUrl: './expense-list.component.html',
   styleUrl: './expense-list.component.scss'
 })
@@ -47,7 +49,7 @@ export class ExpenseListComponent {
   defaultRows: number = 25;
   monthsLoaded: boolean = false;
 
-  constructor(public expenseService: ExpenseService, private router: Router,
+  constructor(private expenseService: ExpenseService, private router: Router,
     private confirmationService: ConfirmationService, private messageService: MessageService) {
 
   }
@@ -65,6 +67,7 @@ export class ExpenseListComponent {
     this.expenseService.getAvailableYears().subscribe(data => {
       this.years = data;
       if (this.years.length > 0) {
+        //years are sorted descending, so first is most current
         this.expenseService.expenseFilters['year'] = this.years[0];
         this.getMonths(true);
       }
@@ -73,12 +76,18 @@ export class ExpenseListComponent {
     this.search.orders.push("date desc");
     // this.getData();
   }
+  getFilters(){
+    return this.expenseService.expenseFilters;
+  }
   getMonths(setCurrent: boolean) {
     this.expenseService.getAvailableMonths(this.expenseService.expenseFilters.year!).subscribe(data => {
       this.months = data;
       if (this.months.length > 0 && setCurrent) {
-        this.expenseService.expenseFilters['month'] = this.months[0];
-        this.search.filters.push("monthString equals " + this.expenseService.expenseFilters.month);
+        let thisMonth = new Date().toLocaleString('default', { month: 'long' });
+        if(this.months.includes(thisMonth)){
+          this.expenseService.expenseFilters['month'] = thisMonth;
+          this.search.filters.push("monthString equals " + this.expenseService.expenseFilters.month);
+        }
       }
       this.monthsLoaded = true;
     })
@@ -94,7 +103,7 @@ export class ExpenseListComponent {
     this.search.firstResult = 0;
     this.getData();
   }
-  pageChange(event: TableLazyLoadEvent) {
+  pageChange(event: TableLazyLoadEvent | null) {
     let filters = this.expenseService.expenseFilters;
     if (event) {
       filters.first = event.first as number;
@@ -167,12 +176,18 @@ export class ExpenseListComponent {
     }
     else {
       this.search.orders.push("date desc");
+      this.search.orders.push("payee");
     }
     if (filters.month) this.search.filters.push("monthString equals " + filters.month);
     if (filters.payee) this.search.filters.push(`payee startswith_ci ${filters.payee}`);
     if (filters.account) this.search.filters.push(`account eq ${filters.account}`);
     if (filters.category) this.search.filters.push(`category eq ${filters.category}`);
     if (filters.subcategory) this.search.filters.push(`subcategory eq ${filters.subcategory}`);
+    if(filters.hideFuture){
+      //substring on the date returns just the yyyy-mm-dd portion
+      //'localDate:' prefix tells the SimpleSearchConverter to convert the string to a LocalDate object
+      this.search.filters.push(`date lte localDate:${new Date().toISOString().slice(0,10)}`);
+    }
   }
   getData() {
     this.expenseService.getExpenseViews(this.search).subscribe(data => {

@@ -3,41 +3,42 @@
         <div class="rowdiv">
             <div class="labeldiv"><label for="date">Date: </label></div>
             <div class="valuediv">
-                <p-datepicker [(ngModel)]="expense.date" inputId="date" name="date" required />
+                <p-datepicker [(ngModel)]="getExpense().date" inputId="date" name="date" required />
             </div>
         </div>
         <div class="rowdiv">
             <div class="labeldiv"><label for="payee">Payee: </label></div>
             <div class="valuediv">
-                <p-select [options]="payees" [(ngModel)]="expense.payee" name="payee" optionLabel="name" required
+                <p-select [options]="payees" [(ngModel)]="getExpense().payee" name="payee" optionLabel="name" required
                     (onChange)="loadPayeeDefaults()" [filter]="true" filterBy="name" class="selector" />
+            <p-button label="New" [routerLink]="['/payeeForm']" [queryParams]="{return: '/expenseForm'}" size="small" />
             </div>
         </div>
         <div class="rowdiv">
             <div class="labeldiv"><label for="account">Account: </label></div>
             <div class="valuediv">
-                <p-select [options]="accounts" [(ngModel)]="expense.account" name="account" optionLabel="name" required
+                <p-select [options]="accounts" [(ngModel)]="getExpense().account" name="account" optionLabel="name" required
                     class="selector" />
             </div>
         </div>
         <div class="rowdiv">
             <div class="labeldiv"><label for="category">{{isSplit? 'Primary ':''}}Category: </label></div>
             <div class="valuediv">
-                <p-select [options]="categories" [(ngModel)]="category" name="category" optionLabel="name"
+                <p-select [options]="categories" [(ngModel)]="expenseService.expenseEditCategory" name="category" optionLabel="name"
                     (onChange)="loadSubs()" required class="selector" dataKey="id"/>
             </div>
         </div>
         <div class="rowdiv">
             <div class="labeldiv"><label for="subcategory">{{isSplit? 'Primary ':''}}Subcategory: </label></div>
             <div class="valuediv">
-                <p-select [options]="subcategories" [(ngModel)]="expense.subcategory" name="subcategory"
+                <p-select [options]="subcategories" [(ngModel)]="getExpense().subcategory" name="subcategory"
                     optionLabel="name" required class="selector" dataKey="id"/>
             </div>
         </div>
         @if (!isSplit) {
         <div class="rowdiv">
             <div class="labeldiv"><label for="amount">Amount: </label></div>
-            <div class="valuediv"><p-inputnumber [(ngModel)]="expense.amount" inputId="amount" mode="decimal"
+            <div class="valuediv"><p-inputnumber [(ngModel)]="getExpense().amount" inputId="amount" mode="decimal"
                     [minFractionDigits]="2" [maxFractionDigits]="2" name="amount" required /></div>
             <p-button label="Split" (onClick)="enableSplit()" size="small" severity="contrast"/>
         </div>
@@ -45,13 +46,13 @@
         <div class="rowdiv">
             <div class="labeldiv"><label for="notes">{{isSplit? 'Primary ':''}}Notes: </label></div>
             <div class="valuediv">
-                <input type="text" pInputText [(ngModel)]="expense.notes" name="notes" />
+                <input type="text" pInputText [(ngModel)]="getExpense().notes" name="notes" />
             </div>
         </div>
         @if (isSplit) {
         <div class="rowdiv" [ngStyle]="{'height':'35px'}">
             <div class="labeldiv"><label for="remain">Primary Amt: </label></div>
-            <div class="valuediv">{{expense.amount | currency}}</div>
+            <div class="valuediv">{{getExpense().amount | currency}}</div>
         </div>
         <div class="rowdiv">
             <div class="labeldiv"><label for="total">Total: </label></div>
@@ -98,7 +99,7 @@
         <br />
         <div style="text-align: center;">
             <p-button type="submit" [disabled]="!expenseForm.form.valid" severity="success">Save</p-button>
-            <p-button label="Back/Cancel" [routerLink]="['/expenseList']" severity="warn"/>
+            <p-button label="Back/Cancel" (onClick)="cancel()" severity="warn"/>
         </div>
         <!--<p-button label="check" (onClick)="check()" />-->
     </div>

@@ -23,6 +23,6 @@ export class ExpenseReportComponent {
 
 
   load() {
-    this.service.getExpenseReport(this.year).subscribe(data => this.report = data);
+    this.service.getCategoryReport(this.year).subscribe(data => this.report = data);
   }
 }

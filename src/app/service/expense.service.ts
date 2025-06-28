@@ -11,21 +11,27 @@ import { ExpenseReport } from '../model/expense-report';
 import { Search } from '../model/search';
 import { BudgetReport } from '../model/budget-report';
 import { ExpenseFilters } from '../model/expense-filters';
+import { FieldReport } from '../model/field-report';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class ExpenseService {
 
-	private accountUrl: string = "http://localhost:8080/api/account";
-	private payeeUrl: string = "http://localhost:8080/api/payee";
-	private categoryUrl: string = "http://localhost:8080/api/category";
-	private subcategoryUrl: string = "http://localhost:8080/api/subcategory";
-	private expenseUrl: string = "http://localhost:8080/api/expense";
-	private expenseViewUrl: string = "http://localhost:8080/api/expenseview";
-	private reportUrl: string = "http://localhost:8080/api/reports";
+	//Service URLs
+	private baseUrl: string = "http://192.168.1.238:8080/api/";
+	private accountUrl: string = this.baseUrl + "account";
+	private payeeUrl: string = this.baseUrl + "payee";
+	private categoryUrl: string = this.baseUrl + "category";
+	private subcategoryUrl: string = this.baseUrl + "subcategory";
+	private expenseUrl: string = this.baseUrl + "expense";
+	private expenseViewUrl: string = this.baseUrl + "expenseview";
+	private reportUrl: string = this.baseUrl + "reports";
 
+	//State management
 	expenseFilters:ExpenseFilters = new ExpenseFilters();
+	expenseEdit: Expense = new Expense();
+	expenseEditCategory: Category | null = null;
 
 	constructor(private http: HttpClient) {
 		console.log("ExpenseService constructor");
@@ -71,7 +77,7 @@ export class ExpenseService {
 		return this.http.get<Payee>(this.payeeUrl + "/" + id);
 	}
 	public savePayee(payee: Payee) {
-		return this.http.post(this.payeeUrl, payee);
+		return this.http.post<Payee>(this.payeeUrl, payee);
 	}
 	public deletePayee(id: number) {
 		return this.http.delete(this.payeeUrl + "/" + id);
@@ -113,17 +119,29 @@ export class ExpenseService {
 		return this.http.delete(this.subcategoryUrl + "/" + id);
 	}
 	//Reports
-	public getExpenseReport(year: number) {
-		return this.http.get<ExpenseReport>(this.reportUrl+ "/expense", { params: { 'year': year } });
+	public getCategoryReport(year: number) {
+		return this.http.get<ExpenseReport>(this.reportUrl+ "/category", { params: { 'year': year } });
 	}
 	public getBudgetReport(year: number, month: string) {
 		let params = { params: { 'year': year, 'month': month } };
 		return this.http.get<BudgetReport>(this.reportUrl + "/budget", params);
+	}
+	public getFieldReport(year: number, field: string) {
+		let params = { params: { 'year': year, 'field': field } };
+		return this.http.get<FieldReport>(this.reportUrl + "/field", params);
 	}
 	public getAvailableYears(){
 		return this.http.get<string[]>(this.expenseViewUrl + "/years");
 	}
 	public getAvailableMonths(year:string){
 		return this.http.get<string[]>(this.expenseViewUrl + "/months", { params: { 'year': year } });
+	}
+
+	//TESTS
+	public test400(){
+		this.http.get(this.baseUrl + "test400").subscribe(result => console.log("test400"));
+	}
+	public test500(){
+		this.http.get(this.baseUrl + "test500").subscribe(result => console.log("test500"));
 	}
 }

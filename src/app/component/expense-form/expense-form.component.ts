@@ -10,6 +10,7 @@ import { DatePicker } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { MessageModule } from 'primeng/message';
+import { MessageService } from 'primeng/api';
 
 import { Expense } from '../../model/expense';
 import { ExpenseService } from '../../service/expense.service';
@@ -18,7 +19,6 @@ import { Payee } from '../../model/payee';
 import { Category } from '../../model/category';
 import { Subcategory } from '../../model/subcategory';
 import { Split } from '../../model/split';
-import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-expense-form',
@@ -27,11 +27,9 @@ import { MessageService } from 'primeng/api';
   styleUrl: './expense-form.component.scss'
 })
 export class ExpenseFormComponent {
-  expense: Expense = new Expense();
   accounts: Account[] = [];
   payees: Payee[] = [];
   categories: Category[] = [];
-  category: Category | null = null;
   subcategories: Subcategory[] = [];
   private route = inject(ActivatedRoute);
   editId: string | null = null;
@@ -39,13 +37,13 @@ export class ExpenseFormComponent {
   splits: Split[] = [];
   total: number | null = null;
 
-  constructor(private expenseService: ExpenseService, private router: Router, private messageService: MessageService) {
+  constructor(public expenseService: ExpenseService, public router: Router, private messageService: MessageService) {
     this.editId = this.route.snapshot.paramMap.get('editId');
     if (this.editId) {
       this.expenseService.getExpense(this.editId).subscribe(data => {
-        this.expense = data;
-        this.expense.date = new Date((data.date as string) + "T00:00:00");
-        this.category = this.expense.subcategory!.category;
+        this.expenseService.expenseEdit = data;
+        this.expenseService.expenseEdit.date = new Date((data.date as string) + "T00:00:00");
+        this.expenseService.expenseEditCategory = this.expenseService.expenseEdit.subcategory!.category;
         this.loadSubs();
       })
     }
@@ -60,57 +58,75 @@ export class ExpenseFormComponent {
     this.expenseService.getCategories().subscribe(data => {
       this.categories = data;
     });
+    this.loadSubs();
+    this.route.queryParams.subscribe((params) => {
+      if (params['payeeId']) {
+        this.expenseService.getPayee(params['payeeId']).subscribe(result => {
+          this.expenseService.expenseEdit!.payee = result;
+          this.loadPayeeDefaults();
+        })
+      }
+    });
   }
-  toDateString(d:Date): string{
-    return `${d.getFullYear()}-${d.getMonth()}-${d.getDay()}`;
+  getExpense() {
+    return this.expenseService.expenseEdit;
+  }
+  cancel() {
+    this.expenseService.expenseEdit = new Expense();
+    this.router.navigate(['/expenseList']);
   }
   onSubmit() {
-    this.expense.date = (this.expense.date as Date).toISOString().slice(0, 10);
+    let expense = this.expenseService.expenseEdit!;
+    expense.date = (expense.date as Date).toISOString().slice(0, 10);
+      let action:string = expense.id? 'updated': 'saved';
+      let severity:string = expense.id? 'info': 'success';
     if (!this.isSplit) {
-      this.expenseService.saveExpense(this.expense).subscribe(result => {
+      this.expenseService.saveExpense(expense).subscribe(result => {
         this.messageService.add({
-          severity: 'success', summary: 'Success',
-          detail: `Expense for $${this.expense.amount} to ${this.expense.payee!.name} saved!`
+          severity: severity, summary: 'Success',
+          detail: `Expense for $${expense.amount} to ${expense.payee!.name} ${action}!`
         });
+        this.expenseService.expenseEdit = new Expense();
         this.router.navigate(['/expenseList']);
       });
     }
     else {
-      if (this.expense.amount! <= 0) {
+      if (expense.amount! <= 0) {
         this.messageService.add({
-          severity: 'danger', summary: 'ERROR!',
+          severity: 'danger', summary: 'ERROR!', life:5000,
           detail: `Sum of splits is greater than total!`
         });
       }
       else {
-        this.expenseService.saveExpense(this.expense).subscribe(result => {
+        this.expenseService.saveExpense(expense).subscribe(result => {
           this.messageService.add({
-            severity: 'success', summary: 'Success',
-            detail: `Expense for $${this.expense.amount} to ${this.expense.payee!.name} saved!`
+            severity: 'success', summary: 'Success', life:5000,
+            detail: `Expense for $${expense.amount} to ${expense.payee!.name} ${action}!`
           });
         });
         for (let split of this.splits) {
           let exp: Expense = new Expense();
-          exp.account = this.expense.account;
-          exp.date = this.expense.date;
-          exp.payee = this.expense.payee;
+          exp.account = expense.account;
+          exp.date = expense.date;
+          exp.payee = expense.payee;
           exp.subcategory = split.subcategory;
           exp.amount = split.amount;
           exp.notes = split.notes;
           this.expenseService.saveExpense(exp).subscribe(result => {
             this.messageService.add({
-              severity: 'success', summary: 'Success',
+              severity: 'success', summary: 'Success', life:5000,
               detail: `Expense for $${exp.amount} to ${exp.payee!.name} saved!`
             });
           });
         }
+        this.expenseService.expenseEdit = new Expense();
         this.router.navigate(['/expenseList']);
       }
     }
   }
   loadSubs() {
-    if (this.category) {
-      this.expenseService.getSubcategories(this.category.id!).subscribe(data => {
+    if (this.expenseService.expenseEditCategory) {
+      this.expenseService.getSubcategories(this.expenseService.expenseEditCategory.id!).subscribe(data => {
         this.subcategories = data;
       });
     }
@@ -123,33 +139,34 @@ export class ExpenseFormComponent {
     }
   }
   loadPayeeDefaults() {
-    if (this.expense.payee) {
-      this.expense.account = this.expense.payee.accountDefault;
-      this.category = this.expense.payee.categoryDefault;
+    let expense = this.expenseService.expenseEdit!;
+    if (expense.payee) {
+      expense.account = expense.payee.accountDefault;
+      this.expenseService.expenseEditCategory = expense.payee.categoryDefault;
       this.loadSubs();
-      this.expense.subcategory = this.expense.payee.subcategoryDefault;
+      expense.subcategory = expense.payee.subcategoryDefault;
     }
   }
   enableSplit() {
     this.isSplit = true;
     this.splits.push(new Split());
-    this.total = this.expense.amount;
+    this.total = this.expenseService.expenseEdit!.amount;
   }
   removeSplit() {
     this.isSplit = false;
     this.splits = [];
-    this.expense.amount = this.total;
+    this.expenseService.expenseEdit!.amount = this.total;
   }
   updateRemain() {
     if (this.total) {
-      this.expense.amount = this.total;
+      this.expenseService.expenseEdit!.amount = this.total;
       for (let split of this.splits) {
-        if (split.amount) this.expense.amount! -= split.amount;
+        if (split.amount) this.expenseService.expenseEdit!.amount! -= split.amount;
       }
     }
   }
   check() {
-    console.log("Expense: " + JSON.stringify(this.expense));
+    console.log("Expense: " + JSON.stringify(this.expenseService.expenseEdit!));
     console.log("Splits: " + JSON.stringify(this.splits));
   }
 }

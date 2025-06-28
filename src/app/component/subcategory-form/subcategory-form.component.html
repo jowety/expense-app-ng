@@ -22,6 +22,12 @@
             </div>
         </div>
         <div class="rowdiv">
+            <div class="labeldiv"><label for="desc">Description: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="subcategory.description" name="desc" />
+            </div>
+        </div>
+        <div class="rowdiv">
             <div class="labeldiv"><label for="budget">Budget: </label></div>
             <div class="valuediv"><p-inputnumber [(ngModel)]="subcategory.budget" inputId="budget" mode="decimal"
                     [minFractionDigits]="2" [maxFractionDigits]="2" name="budget" />

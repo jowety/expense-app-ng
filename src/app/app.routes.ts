@@ -10,6 +10,8 @@ import { SubcategoryFormComponent } from './component/subcategory-form/subcatego
 import { BudgetReportComponent } from './component/budget-report/budget-report.component';
 import { AccountFormComponent } from './component/account-form/account-form.component';
 import { AccountListComponent } from './component/account-list/account-list.component';
+import { FieldReportComponent } from './component/field-report/field-report.component';
+import { TestComponent } from './component/test/test.component';
 
 export const routes: Routes = [
 
@@ -18,7 +20,8 @@ export const routes: Routes = [
 	{ path: 'expenseForm', component: ExpenseFormComponent, title: "Expense Edit" },
 	{ path: 'expenseForm/:editId', component: ExpenseFormComponent, title: "Expense Edit" },
 
-	{ path: 'expenseReport', component: ExpenseReportComponent, title: "Monthly Report" },
+	{ path: 'expenseReport', component: ExpenseReportComponent, title: "Category Report" },
+	{ path: 'fieldReport', component: FieldReportComponent, title: "Field Report" },
 	{ path: 'budgetReport', component: BudgetReportComponent, title: "Budget Report" },
 	
 	{ path: 'accountList', component: AccountListComponent, title: "Accounts" },
@@ -31,5 +34,7 @@ export const routes: Routes = [
 	{ path: 'categoryForm', component: CategoryFormComponent, title: "Category Edit"  },
 	{ path: 'categoryForm/:editId', component: CategoryFormComponent, title: "Category Edit"  },
 	{ path: 'subcategoryForm', component: SubcategoryFormComponent, title: "Subcategory Edit"  },
-	{ path: 'subcategoryForm/:editId', component: SubcategoryFormComponent, title: "Subcategory Edit"  }
+	{ path: 'subcategoryForm/:editId', component: SubcategoryFormComponent, title: "Subcategory Edit"  },
+
+	{ path: 'test', component: TestComponent, title: 'Test Page'}
 ];
