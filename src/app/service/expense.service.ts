@@ -7,11 +7,11 @@ import { Category } from '../model/category';
 import { Subcategory } from '../model/subcategory';
 import { SearchResult } from '../model/search-result';
 import { Expense } from '../model/expense';
-import { ExpenseReport } from '../model/expense-report';
 import { Search } from '../model/search';
 import { BudgetReport } from '../model/budget-report';
 import { ExpenseFilters } from '../model/expense-filters';
 import { FieldReport } from '../model/field-report';
+import { Recurring } from '../model/recurring';
 
 @Injectable({
 	providedIn: 'root'
@@ -19,6 +19,7 @@ import { FieldReport } from '../model/field-report';
 export class ExpenseService {
 
 	//Service URLs
+	//private baseUrl: string = "http://localhost:8080/api/";
 	private baseUrl: string = "http://192.168.1.238:8080/api/";
 	private accountUrl: string = this.baseUrl + "account";
 	private payeeUrl: string = this.baseUrl + "payee";
@@ -27,6 +28,7 @@ export class ExpenseService {
 	private expenseUrl: string = this.baseUrl + "expense";
 	private expenseViewUrl: string = this.baseUrl + "expenseview";
 	private reportUrl: string = this.baseUrl + "reports";
+	private recurringUrl: string = this.baseUrl + "recurring";
 
 	//State management
 	expenseFilters:ExpenseFilters = new ExpenseFilters();
@@ -118,10 +120,20 @@ export class ExpenseService {
 	public deleteSubcategory(id: string) {
 		return this.http.delete(this.subcategoryUrl + "/" + id);
 	}
-	//Reports
-	public getCategoryReport(year: number) {
-		return this.http.get<ExpenseReport>(this.reportUrl+ "/category", { params: { 'year': year } });
+	//Recurring
+	public getRecurringList(){
+		return this.http.get<Recurring[]>(this.recurringUrl);
 	}
+	public getRecurring(id: string): Observable<Recurring> {
+		return this.http.get<Recurring>(this.recurringUrl + "/" + id);
+	}
+	public saveRecurring(recur: Recurring): Observable<Recurring> {
+		return this.http.post<Recurring>(this.recurringUrl, recur);
+	}
+	public deleteRecurring(id: string) {
+		return this.http.delete(this.recurringUrl + "/" + id);
+	}
+	//Reports
 	public getBudgetReport(year: number, month: string) {
 		let params = { params: { 'year': year, 'month': month } };
 		return this.http.get<BudgetReport>(this.reportUrl + "/budget", params);
@@ -131,9 +143,9 @@ export class ExpenseService {
 		return this.http.get<FieldReport>(this.reportUrl + "/field", params);
 	}
 	public getAvailableYears(){
-		return this.http.get<string[]>(this.expenseViewUrl + "/years");
+		return this.http.get<number[]>(this.expenseViewUrl + "/years");
 	}
-	public getAvailableMonths(year:string){
+	public getAvailableMonths(year:number){
 		return this.http.get<string[]>(this.expenseViewUrl + "/months", { params: { 'year': year } });
 	}
 

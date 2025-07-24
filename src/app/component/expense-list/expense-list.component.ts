@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ViewChild } from '@angular/core';
+import { ImageModule } from 'primeng/image';
 
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
@@ -25,7 +26,8 @@ import { ExpenseFilters } from '../../model/expense-filters';
   selector: 'app-expense-list',
   standalone: true,
   imports: [ButtonModule, FloatLabelModule, TableModule, CommonModule, RouterLink, TooltipModule,
-    ToastModule, SelectModule, FormsModule, PaginatorModule, ToggleButtonModule, ToggleSwitchModule],
+    ToastModule, SelectModule, FormsModule, PaginatorModule, ToggleButtonModule, ToggleSwitchModule,
+    ImageModule],
   templateUrl: './expense-list.component.html',
   styleUrl: './expense-list.component.scss'
 })
@@ -39,7 +41,7 @@ export class ExpenseListComponent {
   subcategories: string[] = [];
   //subcategory: string | null = null;
   total = 0;
-  years: string[] = [];
+  years: number[] = [];
   //year: string | null = null;
   months: string[] = [];
   // month: string | null = null;

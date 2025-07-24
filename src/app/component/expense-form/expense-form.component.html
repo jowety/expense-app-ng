@@ -1,5 +1,6 @@
+<div class="title">{{title}}</div>
 <form (ngSubmit)="onSubmit()" #expenseForm="ngForm">
-    <div style="width: 500px;">
+    <div style="width: 500px; padding-top: 10px;">
         <div class="rowdiv">
             <div class="labeldiv"><label for="date">Date: </label></div>
             <div class="valuediv">
@@ -11,7 +12,8 @@
             <div class="valuediv">
                 <p-select [options]="payees" [(ngModel)]="getExpense().payee" name="payee" optionLabel="name" required
                     (onChange)="loadPayeeDefaults()" [filter]="true" filterBy="name" class="selector" />
-            <p-button label="New" [routerLink]="['/payeeForm']" [queryParams]="{return: '/expenseForm'}" size="small" />
+            <p-button label="New" (onClick)="forward('payeeForm')" size="small" 
+            pTooltip="New Payee"/>
             </div>
         </div>
         <div class="rowdiv">
@@ -26,6 +28,8 @@
             <div class="valuediv">
                 <p-select [options]="categories" [(ngModel)]="expenseService.expenseEditCategory" name="category" optionLabel="name"
                     (onChange)="loadSubs()" required class="selector" dataKey="id"/>
+            <p-button label="New" (onClick)="forward('categoryForm')" size="small" 
+            pTooltip="New Category"/>
             </div>
         </div>
         <div class="rowdiv">
@@ -33,14 +37,28 @@
             <div class="valuediv">
                 <p-select [options]="subcategories" [(ngModel)]="getExpense().subcategory" name="subcategory"
                     optionLabel="name" required class="selector" dataKey="id"/>
+            <p-button label="New" (onClick)="forward('subcategoryForm')" size="small" 
+            pTooltip="New Subcategory"/>
             </div>
         </div>
         @if (!isSplit) {
         <div class="rowdiv">
             <div class="labeldiv"><label for="amount">Amount: </label></div>
-            <div class="valuediv"><p-inputnumber [(ngModel)]="getExpense().amount" inputId="amount" mode="decimal"
-                    [minFractionDigits]="2" [maxFractionDigits]="2" name="amount" required /></div>
+            <div class="valuediv">
+                    <div class="p-field-with-icon">
+                        <i class="pi pi-dollar custom-input-icon"></i>
+                        <p-inputnumber [(ngModel)]="getExpense().amount" inputId="amount" mode="decimal" 
+                        [minFractionDigits]="2" [maxFractionDigits]="2" name="amount" required />
+                    </div>
+            </div>
+
             <p-button label="Split" (onClick)="enableSplit()" size="small" severity="contrast"/>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="estimate">Estimate?: </label></div>
+            <div class="valuediv">
+                <p-togglebutton [(ngModel)]="getExpense().estimate" onLabel="Yes" offLabel="No" styleClass="w-24" name="estimate"/>
+            </div>
         </div>
         }
         <div class="rowdiv">
@@ -56,9 +74,14 @@
         </div>
         <div class="rowdiv">
             <div class="labeldiv"><label for="total">Total: </label></div>
-            <div class="valuediv"><p-inputnumber [(ngModel)]="total" inputId="total" mode="decimal"
-                    [minFractionDigits]="2" [maxFractionDigits]="2" name="total" required 
-                    (ngModelChange)="updateRemain()"/></div>
+            <div class="valuediv">
+                <div class="p-field-with-icon">
+                    <i class="pi pi-dollar custom-input-icon"></i>
+                    <p-inputnumber [(ngModel)]="total" inputId="total" mode="decimal"
+                        [minFractionDigits]="2" [maxFractionDigits]="2" name="total" required 
+                        (ngModelChange)="updateRemain()"/>
+                </div>
+            </div>
             <p-button label="Unsplit" (onClick)="removeSplit()" size="small" severity="contrast"/>
         </div>
         }
@@ -81,9 +104,14 @@
                 </div>
                 <div class="rowdiv">
                     <div class="labeldiv"><label for="splitamount">Split {{$index + 1}} Amount: </label></div>
-                    <div class="valuediv"><p-inputnumber [(ngModel)]="split.amount" inputId="splitamount" mode="decimal"
-                            [minFractionDigits]="2" [maxFractionDigits]="2" name="splitamount" required 
-                            (ngModelChange)="updateRemain()"/></div>
+                    <div class="valuediv">
+                        <div class="p-field-with-icon">
+                            <i class="pi pi-dollar custom-input-icon"></i>
+                            <p-inputnumber [(ngModel)]="split.amount" inputId="splitamount" mode="decimal"
+                                [minFractionDigits]="2" [maxFractionDigits]="2" name="splitamount" required 
+                                (ngModelChange)="updateRemain()"/>
+                        </div>
+                    </div>
                 </div>
                 <div class="rowdiv">
                     <div class="labeldiv"><label for="notes">Split {{$index + 1}} Notes: </label></div>
@@ -99,7 +127,7 @@
         <br />
         <div style="text-align: center;">
             <p-button type="submit" [disabled]="!expenseForm.form.valid" severity="success">Save</p-button>
-            <p-button label="Back/Cancel" (onClick)="cancel()" severity="warn"/>
+            <p-button label="Back/Cancel" (onClick)="cancel()" severity="contrast"/>
         </div>
         <!--<p-button label="check" (onClick)="check()" />-->
     </div>

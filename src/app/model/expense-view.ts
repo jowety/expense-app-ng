@@ -1,4 +1,4 @@
-export class ExpenseView {    
+export class ExpenseView {
         id: number | null = null;
         date: Date | string | null = null;
         year: number | null = null;
@@ -10,4 +10,6 @@ export class ExpenseView {
         subcategory: string | null = null;
         amount: number | null = null;
         notes: string | null = null;
+        autoInsert: boolean = false;
+        estimate: boolean = false;
 }

@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router} from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRoute} from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -11,6 +11,8 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 
 import { Expense } from '../../model/expense';
 import { ExpenseService } from '../../service/expense.service';
@@ -22,7 +24,8 @@ import { Split } from '../../model/split';
 
 @Component({
   selector: 'app-expense-form',
-  imports: [FormsModule, InputNumber, InputTextModule, DatePicker, CommonModule, ButtonModule, SelectModule, MessageModule, RouterLink],
+  imports: [FormsModule, InputNumber, InputTextModule, DatePicker, CommonModule, ButtonModule, SelectModule, 
+    MessageModule, TooltipModule, ToggleButtonModule],
   templateUrl: './expense-form.component.html',
   styleUrl: './expense-form.component.scss'
 })
@@ -36,6 +39,7 @@ export class ExpenseFormComponent {
   isSplit: boolean = false;
   splits: Split[] = [];
   total: number | null = null;
+  title: string = "New Expense";
 
   constructor(public expenseService: ExpenseService, public router: Router, private messageService: MessageService) {
     this.editId = this.route.snapshot.paramMap.get('editId');
@@ -45,6 +49,7 @@ export class ExpenseFormComponent {
         this.expenseService.expenseEdit.date = new Date((data.date as string) + "T00:00:00");
         this.expenseService.expenseEditCategory = this.expenseService.expenseEdit.subcategory!.category;
         this.loadSubs();
+        this.title = "Edit Expense";
       })
     }
   }
@@ -66,10 +71,23 @@ export class ExpenseFormComponent {
           this.loadPayeeDefaults();
         })
       }
+      if (params['categoryId']) {
+        this.expenseService.getCategory(params['categoryId']).subscribe(result => {
+          this.expenseService.expenseEditCategory = result;
+        })
+      }
+      if (params['subcategoryId']) {
+        this.expenseService.getSubcategory(params['subcategoryId']).subscribe(result => {
+          this.expenseService.expenseEdit!.subcategory = result;
+        })
+      }
     });
   }
   getExpense() {
     return this.expenseService.expenseEdit;
+  }
+  forward(route:string){
+    this.router.navigate([route], {queryParams: {path: "expenseForm"}});
   }
   cancel() {
     this.expenseService.expenseEdit = new Expense();

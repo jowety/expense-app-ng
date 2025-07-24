@@ -1,4 +1,14 @@
-<div class="card">
+<div class="card" style="padding-top: 10px">
+    <div class="p-fluid form-row">
+        <p-float-label>
+            <label for="year">Year:</label>
+            <p-select [options]="years" [(ngModel)]="year" (onChange)="load()" name="year" styleClass="w-full" />
+        </p-float-label>
+        <p-float-label>
+            <label for="month">Month:</label>
+            <p-select [options]="months" [(ngModel)]="month" (onChange)="load()" name="month" styleClass="w-full" />
+        </p-float-label>
+    </div>
     <h1>Budget Report for {{report.month}} {{report.year}}</h1>
     <table class="report">
         <!--Header-->

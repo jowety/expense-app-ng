@@ -1,0 +1,99 @@
+<div class="title">{{title}}</div>
+<form (ngSubmit)="onSubmit()" #recurrForm="ngForm">
+    <div style="width: 500px; padding-top: 10px;">
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="payee">Payee: </label></div>
+            <div class="valuediv">
+                <p-select [options]="payees" [(ngModel)]="recur.payee" name="payee" optionLabel="name" required
+                    (onChange)="loadPayeeDefaults()" [filter]="true" filterBy="name" class="selector" />
+                <p-button label="New" [routerLink]="['/payeeForm']" [queryParams]="{return: '/recurringForm'}"
+                    size="small" pTooltip="New Payee" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="account">Account: </label></div>
+            <div class="valuediv">
+                <p-select [options]="accounts" [(ngModel)]="recur.account" name="account" optionLabel="name" required
+                    class="selector" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="category">Category: </label></div>
+            <div class="valuediv">
+                <p-select [options]="categories" [(ngModel)]="category" name="category" optionLabel="name"
+                    (onChange)="loadSubs()" required class="selector" dataKey="id" />
+                <p-button label="New" [routerLink]="['/categoryForm']" [queryParams]="{return: '/recurringForm'}"
+                    size="small" pTooltip="New Category" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="subcategory">Subcategory: </label></div>
+            <div class="valuediv">
+                <p-select [options]="subcategories" [(ngModel)]="recur.subcategory" name="subcategory"
+                    optionLabel="name" required class="selector" dataKey="id" />
+                <p-button label="New" [routerLink]="['/subcategoryForm']" [queryParams]="{return: '/recurringForm'}"
+                    size="small" pTooltip="New Subcategory" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="every">Every: </label></div>
+            <div class="valuediv">
+                <p-select [options]="everys" [(ngModel)]="recur.every" name="every" required class="selector"
+                    [ngStyle]="{'width':'75px'}" />
+                <p-select [options]="frequencies" [(ngModel)]="recur.frequency" name="frequency" required
+                    class="selector" [ngStyle]="{'width':'145px'}" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="on">On Day: </label></div>
+            <div class="valuediv">
+                @if (recur.frequency === "MONTHS") {
+                <p-select [options]="daysForMonthFreq" [(ngModel)]="recur.day" name="day" required class="selector" />
+                }
+                @else if (recur.frequency ==="YEARS") {
+                <p-select [options]="getMonthSelects()" [(ngModel)]="recur.month" name="month" required class="selector"
+                    optionLabel="name" optionValue="value" (onChange)="updateMonthDaysSelects()"
+                    [ngStyle]="{'width':'140px'}" />
+                <p-select [options]="daysForYearFreq" [(ngModel)]="recur.day" name="day" required class="selector"
+                    [ngStyle]="{'width':'90px'}" />
+                }
+                @else if (recur.frequency === "WEEKS") {
+                <p-select [options]="getWeekdaySelects()" [(ngModel)]="recur.day" name="day" class="selector"
+                    optionLabel="name" optionValue="value" />
+                }
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="amount">Amount: </label></div>
+            <div class="valuediv">
+                <div class="p-field-with-icon">
+                    <i class="pi pi-dollar custom-input-icon"></i>
+                    <p-inputnumber [(ngModel)]="recur.amount" inputId="amount" mode="decimal" [minFractionDigits]="2"
+                        [maxFractionDigits]="2" name="amount" required />
+                </div>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="varies">Amount Vaires?: </label></div>
+            <div class="valuediv">
+                <p-togglebutton [(ngModel)]="recur.amountVaries" onLabel="Yes" offLabel="No" styleClass="w-24"
+                    name="varies" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="insert">Insert On: </label></div>
+            <div class="valuediv">
+                <p-select [options]="getInsertOptions()" [(ngModel)]="recur.insertOption" name="insert" class="selector"
+                    optionLabel="display" optionValue="value" />
+            </div>
+        </div>
+
+
+        <br />
+        <div style="text-align: center;">
+            <p-button type="submit" [disabled]="!recurrForm.form.valid" severity="success">Save</p-button>
+            <p-button label="Back/Cancel" (onClick)="back()" severity="contrast" />
+        </div>
+        <!-- <p-button label="check" (onClick)="check()" /> -->
+    </div>
+</form>

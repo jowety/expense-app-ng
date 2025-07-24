@@ -1,6 +1,6 @@
 export class ExpenseFilters {
-    year: string | null = new Date().getFullYear().toString();
-    month: string | null = new Date().toLocaleString('default', { month: 'long' });
+    year: number | null = new Date().getFullYear();
+    month: string | null = null;
     payee: string | null = null;
     account: string | null = null;
     category: string | null = null;

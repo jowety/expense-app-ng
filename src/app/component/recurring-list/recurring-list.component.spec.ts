@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExpenseReportComponent } from './expense-report.component';
+import { RecurringListComponent } from './recurring-list.component';
 
-describe('ExpenseReportComponent', () => {
-  let component: ExpenseReportComponent;
-  let fixture: ComponentFixture<ExpenseReportComponent>;
+describe('RecurringListComponent', () => {
+  let component: RecurringListComponent;
+  let fixture: ComponentFixture<RecurringListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExpenseReportComponent]
+      imports: [RecurringListComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ExpenseReportComponent);
+    fixture = TestBed.createComponent(RecurringListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -7,13 +7,28 @@ body{
 h1{
     font-size: 16pt;
 }
+.title{
+    text-align: center;
+    width: 400px;
+    font-weight: bold;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    font-size: 16pt;
+    color: darkgreen;
+    background-color: lightgray;
+}
 .rowdiv{
     display: flex;
     align-items: center;
 }
 .labeldiv{
     display: inline-block;
-    width: 200px;
+    width: 100px;
+    text-align: right;
+}
+.labeldivwide{
+    display: inline-block;
+    width: 150px;
     text-align: right;
 }
 .valuediv{
@@ -40,19 +55,26 @@ table.report th{
 }
 table.report td{
     border: 1px solid;
+    padding-left: 10px;
+    padding-right: 5px;
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
 td.currency{
-    padding-left: 10px;
     text-align: right;
 }
 .selector{
     width: 220px;
 }
+tr.totalRow{
+    font-weight: bold;
+}
 tr.categoryRow{
-    background-color: #c2f1ef;
+    background-color: #e1f8f6;
 }
 tr.subcategoryRow{
 }
+
 .container{
     display: flex; /* Enables flexbox layout */
   align-items: center; /* Aligns items vertically in the center */
@@ -63,5 +85,49 @@ tr.subcategoryRow{
     background-color: lightgreen;
 }
 .budgetCellOver{
-    background-color: palevioletred;
+    background-color: rgb(248, 196, 213);
+}
+
+/* your-component.component.css */
+
+.p-field-with-icon {
+  position: relative; /* Make this the positioning context for the icon */
+  display: inline-flex; /* or 'flex' or 'block' depending on your layout needs */
+  align-items: center; /* Vertically align items */
+  width: 100%; /* Or a fixed width */
+  max-width: 200px; /* Example max width */
+}
+
+.p-field-with-icon .p-inputnumber {
+  /* Ensure input number takes full width within its container */
+  width: 100%;
+}
+
+.p-field-with-icon .p-inputnumber-input {
+  /* Add padding to the input field itself to make space for the icon */
+  padding-left: 2.5rem; /* Adjust as needed based on icon size */
+  padding-right: 0.75rem; /* Default padding on right, adjust if right icon */
+}
+
+.p-field-with-icon .custom-input-icon {
+  position: absolute;
+  left: 0.75rem; /* Position from the left */
+  color: var(--text-color-secondary); /* Or any color you prefer */
+  z-index: 1; /* Ensure icon is above the input */
+}
+
+.p-field-with-icon .custom-input-icon.right-icon {
+  left: auto; /* Override left positioning */
+  right: 0.75rem; /* Position from the right */
+}
+
+/* Adjust padding for input when using a right icon */
+.p-field-with-icon .p-inputnumber-input.has-right-icon {
+  padding-right: 2.5rem; /* Make space for right icon */
+  padding-left: 0.75rem; /* Default padding on left */
+}
+
+.form-row {
+  display: flex; /* Aligns children (your p-float-labels) in a row */
+  gap: 1rem;     /* Adds a 1rem space between the elements */
 }

@@ -28,15 +28,15 @@ export class AppComponent {
       {label: 'Expenses', routerLink: '/expenseList'},
       {label: 'Reports', 
         items:[
-          {label: 'Category Totals', routerLink: '/expenseReport'},
-          {label: 'Payee/Account Totals', routerLink: '/fieldReport'},
+          {label: 'Expense Totals', routerLink: '/fieldReport'},
           {label: 'Budget Report', routerLink: '/budgetReport'}
         ]},
       {label: "Setup", 
         items: [
           {label: 'Accounts', routerLink: '/accountList'},
           {label: 'Categories', routerLink: '/categoryList'},
-          {label: 'Payees', routerLink: '/payeeList'}
+          {label: 'Payees', routerLink: '/payeeList'},
+          {label: 'Recurring', routerLink: '/recurringList'}
         ]
       }
     ]

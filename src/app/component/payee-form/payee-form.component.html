@@ -1,43 +1,46 @@
+<div class="title">{{title}}</div>
 <form (ngSubmit)="onSubmit()" #payeeForm="ngForm">
-    <div style="width: 600px;">
+    <div style="width: 500px; padding-top: 10px;">
         
         <div class="rowdiv">
-            <div class="labeldiv"><label for="name">Name: </label></div>
+            <div class="labeldivwide"><label for="name">Name: </label></div>
             <div class="valuediv">
                 <input type="text" pInputText [(ngModel)]="payee.name" name="name" />
             </div>
         </div>
         <div class="rowdiv">
-            <div class="labeldiv"><label for="description">Description: </label></div>
+            <div class="labeldivwide"><label for="description">Description: </label></div>
             <div class="valuediv">
                 <input type="text" pInputText [(ngModel)]="payee.description" name="description" />
             </div>
         </div>
         <div class="rowdiv">
-            <div class="labeldiv"><label for="account">Default Account: </label></div>
+            <div class="labeldivwide"><label for="account">Default Account: </label></div>
             <div class="valuediv">
                 <p-select [options]="accounts" [(ngModel)]="payee.accountDefault" name="account" optionLabel="name" required class="selector"/>
             </div>
         </div>
         <div class="rowdiv">
-            <div class="labeldiv"><label for="category">Default Category: </label></div>
+            <div class="labeldivwide"><label for="category">Default Category: </label></div>
             <div class="valuediv">
                 <p-select [options]="categories" [(ngModel)]="payee.categoryDefault" name="category" optionLabel="name"
                     (onChange)="loadSubs()" class="selector"/>
+             <p-button label="New" (onClick)="forward('categoryForm')" size="small" pTooltip="New Category"/> 
             </div>
         </div>
         <div class="rowdiv">
-            <div class="labeldiv"><label for="subcategory">Default Subcategory: </label></div>
+            <div class="labeldivwide"><label for="subcategory">Default Subcategory: </label></div>
             <div class="valuediv">
                 <p-select [options]="subcategories" [(ngModel)]="payee.subcategoryDefault" name="subcategory"
                     optionLabel="name" class="selector"/>
+            <p-button label="New" (onClick)="forward('subcategoryForm')" size="small" pTooltip="New Subcategory"/>
             </div>
         </div>
 
         <br />
         <div style="text-align: center;">
             <p-button type="submit" [disabled]="!payeeForm.form.valid">Save</p-button>
-            <p-button label="Back/Cancel" (onClick)="navigateBack()" />
+            <p-button label="Back/Cancel" (onClick)="back()" severity="contrast"/>
         </div>
     </div>
 </form>

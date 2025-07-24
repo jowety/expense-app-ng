@@ -14,11 +14,12 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-account-form',
-  imports: [SelectModule, FormsModule, ButtonModule, InputTextModule, InputNumber, RouterLink],
+  imports: [SelectModule, FormsModule, ButtonModule, InputTextModule, RouterLink],
   templateUrl: './account-form.component.html',
   styleUrl: './account-form.component.scss'
 })
 export class AccountFormComponent {
+  title: string = "New Account";
   account: Account = new Account();
   types: string[] = ["CASH", "CREDIT"];
   private route = inject(ActivatedRoute);
@@ -29,6 +30,7 @@ export class AccountFormComponent {
     private confirmationService: ConfirmationService, private messageService: MessageService) {
     this.editId = this.route.snapshot.paramMap.get('editId');
     if (this.editId) {
+      this.title = "Edit Account";
       this.expenseService.getAccount(this.editId).subscribe(data => {
         this.account = data;
         this.editMode = true;

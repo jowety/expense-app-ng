@@ -1,0 +1,41 @@
+<div class="card">
+    <div class="container">
+<p-button [routerLink]="['/recurringForm']" label="New" size="small" pTooltip="New"/>
+
+    </div>
+<p-table [value]="recurrings" [paginator]="false" [lazy]="false" dataKey="id">
+        <ng-template #header>
+            <tr> 
+                <th pSortableColumn="amount">Amount<p-sortIcon field="amount" /></th>
+                <th pSortableColumn="amountVaries">Varies<p-sortIcon field="amountVaries" /></th>
+                <th pSortableColumn="payee.name">Payee<p-sortIcon field="payee" /></th>
+                <th pSortableColumn="subcategory.category.name">Category<p-sortIcon field="subcategory.catetgory.name" /></th>
+                <th pSortableColumn="subcategory.name">Subcategory<p-sortIcon field="subcategory" /></th>
+                <th pSortableColumn="day">Frequency<p-sortIcon field="day" /></th>
+                <th pSortableColumn="insertOption">Entry<p-sortIcon field="insertOption" /></th>
+                <th pSortableColumn="notes">Notes<p-sortIcon field="notes" /></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-recur>
+            <tr>
+                <td>{{ recur.amount | currency: 'USD'}}</td>
+                <td>{{ recur.amountVaries? 'Yes':'No' }}</td>
+                <td>{{ recur.payee.name }}</td>
+                <td>{{ recur.subcategory.category.name }}</td>
+                <td>{{ recur.subcategory.name }}</td>
+                <td>{{ getFreqString(recur)}} </td>
+                <td>{{ recur.insertOption }}</td>
+                <td>{{ recur.notes }}</td>
+                <td>
+                    <p-button [routerLink]="['/recurringForm', recur.id]" 
+                    pTooltip="Edit" severity="info" size="small">
+                        <i class="pi pi-pencil"></i>
+                    </p-button>
+                    <!-- <p-button (click)="confirmDelete(recur, $event)" pTooltip="Delete" severity="danger" size="small">
+                        <i class="pi pi-trash"></i>
+                    </p-button> -->
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

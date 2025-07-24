@@ -65,8 +65,13 @@
         <ng-template #body let-exp>
             <tr>
                 <td>{{ exp.date | date:'shortDate' }}</td>
-                <td>{{ exp.amount | currency: 'USD'}}</td>
-                <td>{{ exp.payee }}</td>
+                <td>{{ exp.amount | currency: 'USD'}}
+                    @if (exp.estimate) {<i class="pi pi-exclamation-circle" pTooltip="Estimate"
+                    style="font-size: 1rem;"></i>}    
+                </td>
+                <td>{{ exp.payee }}
+                    @if (exp.autoInsert) {<i class="pi pi-replay" pTooltip="Recurring"
+                    style="font-size: 1rem; padding-left: 5px;"></i>}</td>
                 <td>{{ exp.account }}</td>
                 <td>{{ exp.category }}</td>
                 <td>{{ exp.subcategory }}</td>

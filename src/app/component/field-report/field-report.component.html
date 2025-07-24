@@ -1,29 +1,45 @@
 <div class="card">
-    <h1>Expense Report for {{report.year}}</h1>
-    <p-selectbutton [options]="fields" [(ngModel)]="field" aria-labelledby="basic" (onChange)="load()" />
+    <div class="flex flex-column">
+            <label for="field" class="mb-2 text-xs">Group By:</label>
+            <p-selectbutton [options]="fields" [(ngModel)]="field" aria-labelledby="basic" (onChange)="load()" name="field"/>
+    </div>
+    <h1>{{field}} Totals for {{report.year}}</h1>
     <table class="report">
         <!--Header-->
         <tr>
             <th>{{field}}</th>
+            @if (field === 'Category') {<th>Subcategory</th>}
             @for (month of report.months; track $index) {
                 <th>{{month}}</th>
             }
         </tr>
         <!--Month Totals-->
-        <tr class="categoryRow">
-            <td>All</td>
+        <tr class="totalRow">
+            <td>Month Total</td>
+            @if (field === 'Category') {<th></th>}
             @for (month of report.months; track $index) {
-                <td class="currency">{{report.monthTotals[month] | currency: 'USD'}}</td>
+                <td class="currency">{{report.monthTotals[month]  | number:'1.2-2'}}</td>
             }
         </tr>
         @for (fieldVal of report.fields; track $index; let idx = $index) {
             <!--Category Totals-->
-            <tr>
+            <tr [ngClass]="field == 'Category'? 'categoryRow': ''">
                 <td>{{fieldVal.name}}</td>
+                @if (field === 'Category') {<th></th>}
                 @for (month of report.months; track $index) {
-                    <td class="currency">{{fieldVal.monthTotals[month] | currency: 'USD'}}</td>
+                    <td class="currency">{{fieldVal.monthTotals[month]  | number:'1.2-2'}}</td>
                 }
             </tr>
+            @for (subcategory of fieldVal.subs; track $index; let idx = $index) {
+                <!--Subcategory Totals-->
+                <tr class="subcategoryRow">
+                    <td></td>
+                    <td>{{subcategory.name}}</td>
+                    @for (month of report.months; track $index) {
+                        <td class="currency">{{subcategory.monthTotals[month]  | number:'1.2-2'}}</td>
+                    }
+                </tr>
+            }
         }
     </table>
 </div>
