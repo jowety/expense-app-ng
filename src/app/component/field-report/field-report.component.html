@@ -1,44 +1,97 @@
 <div class="card">
-    <div class="flex flex-column">
-            <label for="field" class="mb-2 text-xs">Group By:</label>
-            <p-selectbutton [options]="fields" [(ngModel)]="field" aria-labelledby="basic" (onChange)="load()" name="field"/>
+    <div class="flex">
+        <div class="flex flex-column">
+                <label for="field" class="mb-2 text-xs">Group By:</label>
+                <p-selectbutton [options]="fields" [(ngModel)]="field" aria-labelledby="basic" (onChange)="load()" name="field"/>
+        </div>  
+        <div class="flex flex-column" [ngStyle]="{'padding-left': '10px'}">
+            <label class="mb-2 text-xs">Show:</label>  
+            <div class="flex">
+                <p-togglebutton [(ngModel)]="showMonths" onLabel="Months" offLabel="Months"/>
+                <p-togglebutton [(ngModel)]="showStats" onLabel="Stats" offLabel="Stats"/>
+            </div>           
+        </div>  
+        @if (field === 'Category') {   
+            <div class="flex flex-column" [ngStyle]="{'padding-left': '10px'}">
+                <label for="collapse" class="mb-2 text-xs">Collapse <br/>Subs:</label>             
+                <p-toggleswitch [(ngModel)]="collapse" id="collapse"/>
+            </div>
+        }
     </div>
     <h1>{{field}} Totals for {{report.year}}</h1>
     <table class="report">
         <!--Header-->
         <tr>
             <th>{{field}}</th>
-            @if (field === 'Category') {<th>Subcategory</th>}
-            @for (month of report.months; track $index) {
-                <th>{{month}}</th>
+            @if (field === 'Category' && !collapse) {<th>Subcategory</th>}
+            @if(showMonths){
+                @for (month of report.months; track $index) {
+                    <th>{{month}}</th>
+                }
+            }
+            @if(showStats){
+                <th>Average 1</th>
+                <th>Average 2</th>
+                <th>Low</th>
+                <th>High</th>
+                <th>Year Total</th>
             }
         </tr>
         <!--Month Totals-->
         <tr class="totalRow">
-            <td>Month Total</td>
-            @if (field === 'Category') {<th></th>}
-            @for (month of report.months; track $index) {
-                <td class="currency">{{report.monthTotals[month]  | number:'1.2-2'}}</td>
+            <td>Month Totals</td>
+            @if (field === 'Category' && !collapse) {<th></th>}
+            @if(showMonths){
+                @for (month of report.months; track $index) {
+                    <td class="currency">{{report.monthTotals[month]  | number:'1.2-2'}}</td>
+                }
+            }
+            @if(showStats){
+                <td class="currency">{{report.stats!.average1| number:'1.2-2'}}</td>
+                <td class="currency">{{report.stats!.average2| number:'1.2-2'}}</td>
+                <td class="currency">{{report.stats!.min| number:'1.2-2'}}</td>
+                <td class="currency">{{report.stats!.max| number:'1.2-2'}}</td>
+                <td class="currency">{{report.stats!.total| number:'1.2-2'}}</td>
             }
         </tr>
         @for (fieldVal of report.fields; track $index; let idx = $index) {
             <!--Category Totals-->
             <tr [ngClass]="field == 'Category'? 'categoryRow': ''">
                 <td>{{fieldVal.name}}</td>
-                @if (field === 'Category') {<th></th>}
-                @for (month of report.months; track $index) {
-                    <td class="currency">{{fieldVal.monthTotals[month]  | number:'1.2-2'}}</td>
+                @if (field === 'Category' && !collapse) {<th></th>}
+                @if(showMonths){
+                    @for (month of report.months; track $index) {
+                        <td class="currency">{{fieldVal.monthTotals[month]  | number:'1.2-2'}}</td>
+                    }
+                }
+                @if(showStats){
+                    <td class="currency">{{fieldVal.stats!.average1| number:'1.2-2'}}</td>
+                    <td class="currency">{{fieldVal.stats!.average2| number:'1.2-2'}}</td>
+                    <td class="currency">{{fieldVal.stats!.min| number:'1.2-2'}}</td>
+                    <td class="currency">{{fieldVal.stats!.max| number:'1.2-2'}}</td>
+                    <td class="currency">{{fieldVal.stats!.total| number:'1.2-2'}}</td>
                 }
             </tr>
-            @for (subcategory of fieldVal.subs; track $index; let idx = $index) {
-                <!--Subcategory Totals-->
-                <tr class="subcategoryRow">
-                    <td></td>
-                    <td>{{subcategory.name}}</td>
-                    @for (month of report.months; track $index) {
-                        <td class="currency">{{subcategory.monthTotals[month]  | number:'1.2-2'}}</td>
-                    }
-                </tr>
+            @if (!collapse) {
+                @for (subcategory of fieldVal.subs; track $index; let idx = $index) {
+                    <!--Subcategory Totals-->
+                    <tr class="subcategoryRow">
+                        <td></td>
+                        <td>{{subcategory.name}}</td>
+                        @if(showMonths){
+                            @for (month of report.months; track $index) {
+                                <td class="currency">{{subcategory.monthTotals[month]  | number:'1.2-2'}}</td>
+                            }
+                        }
+                        @if(showStats){
+                            <td class="currency">{{subcategory.stats!.average1| number:'1.2-2'}}</td>
+                            <td class="currency">{{subcategory.stats!.average2| number:'1.2-2'}}</td>
+                            <td class="currency">{{subcategory.stats!.min| number:'1.2-2'}}</td>
+                            <td class="currency">{{subcategory.stats!.max| number:'1.2-2'}}</td>
+                            <td class="currency">{{subcategory.stats!.total| number:'1.2-2'}}</td>
+                        }
+                    </tr>
+                }
             }
         }
     </table>

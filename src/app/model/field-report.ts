@@ -1,4 +1,5 @@
 import { ReportMonthValues } from "./report-month-values";
+import { Stats } from "./stats";
 
 
 export class FieldReport {    
@@ -7,4 +8,5 @@ export class FieldReport {
     fieldName: string | null = null;
     monthTotals: { [key: string]: number } = {};
     fields: ReportMonthValues[] = [];
+    stats: Stats | null = new Stats();
 }

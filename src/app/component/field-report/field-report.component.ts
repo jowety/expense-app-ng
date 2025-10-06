@@ -6,13 +6,15 @@ import { TableModule } from 'primeng/table';
 import { SelectModule } from 'primeng/select';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 
 import { ExpenseService } from '../../service/expense.service';
 import { FieldReport } from '../../model/field-report';
 
 @Component({
   selector: 'app-field-report',
-  imports: [TableModule, CommonModule, SelectModule, FormsModule, SelectButtonModule, FloatLabelModule],
+  imports: [TableModule, CommonModule, SelectModule, FormsModule, SelectButtonModule, FloatLabelModule, ToggleSwitchModule, ToggleButtonModule],
   templateUrl: './field-report.component.html',
   styleUrl: './field-report.component.scss'
 })
@@ -21,6 +23,9 @@ export class FieldReportComponent {
   report: FieldReport = new FieldReport();
   fields: string[] = ['Category', 'Payee','Account'];
   field: string  = 'Category';
+  collapse: boolean = false;
+  showMonths: boolean = true;
+  showStats: boolean = false;
 
   constructor(private service: ExpenseService) {
   }
@@ -31,6 +36,7 @@ export class FieldReportComponent {
 
 
   load() {
-    this.service.getFieldReport(this.year, this.field.toLowerCase()).subscribe(data => this.report = data);
+    this.service.getFieldReport(this.year, this.field.toLowerCase()).subscribe(
+      data => this.report = data);
   }
 }

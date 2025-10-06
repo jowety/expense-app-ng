@@ -130,8 +130,11 @@ export class ExpenseService {
 	public saveRecurring(recur: Recurring): Observable<Recurring> {
 		return this.http.post<Recurring>(this.recurringUrl, recur);
 	}
-	public deleteRecurring(id: string) {
+	public deleteRecurring(id: number) {
 		return this.http.delete(this.recurringUrl + "/" + id);
+	}
+	public getRecurringMonthTotal(): Observable<number> {
+		return this.http.get<number>(this.recurringUrl + "/monthtotal");
 	}
 	//Reports
 	public getBudgetReport(year: number, month: string) {
