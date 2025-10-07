@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router} from '@angular/router';
 
 import { TableModule } from 'primeng/table';
 import { SelectModule } from 'primeng/select';
@@ -27,7 +28,7 @@ export class FieldReportComponent {
   showMonths: boolean = true;
   showStats: boolean = false;
 
-  constructor(private service: ExpenseService) {
+  constructor(private service: ExpenseService, public router: Router) {
   }
   ngOnInit() {
     this.load();
@@ -38,5 +39,31 @@ export class FieldReportComponent {
   load() {
     this.service.getFieldReport(this.year, this.field.toLowerCase()).subscribe(
       data => this.report = data);
+  }
+
+  details(month:string, fieldValue:string, subCategory:string | null){
+    //pass in month, fieldValue, subCategory if present
+    //set into filters
+    let filters = this.service.expenseFilters;
+    filters.month = month;
+    if(this.field === 'Category'){
+      filters.category = fieldValue;
+      filters.subcategory = subCategory;
+      filters.account = null;
+      filters.payee = null;
+    }       
+    else if(this.field === 'Account'){ 
+      filters.account = fieldValue;
+      filters.category = null;
+      filters.subcategory = null;
+      filters.payee = null;
+    }
+    else if(this.field === 'Payee') {
+      filters.payee = fieldValue;
+      filters.account = null;
+      filters.category = null;
+      filters.subcategory = null;
+    }
+    this.router.navigate(['/expenseList']);
   }
 }

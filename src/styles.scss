@@ -75,6 +75,13 @@ tr.categoryRow{
 tr.subcategoryRow{
 }
 
+.clickable-cell {
+  cursor: pointer;
+}
+
+.clickable-cell:hover {
+  background-color: #f8f7c1; /* Light grey background on hover */
+}
 .container{
     display: flex; /* Enables flexbox layout */
   align-items: center; /* Aligns items vertically in the center */

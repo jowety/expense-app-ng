@@ -61,7 +61,12 @@
                 @if (field === 'Category' && !collapse) {<th></th>}
                 @if(showMonths){
                     @for (month of report.months; track $index) {
-                        <td class="currency">{{fieldVal.monthTotals[month]  | number:'1.2-2'}}</td>
+                        @if (fieldVal.monthTotals[month]) {
+                        <td class="currency" (click)="details(month, fieldVal.name!, null)"  class="clickable-cell">
+                            {{fieldVal.monthTotals[month]  | number:'1.2-2'}}
+                        </td>
+                        }
+                        @else {<td></td>}
                     }
                 }
                 @if(showStats){
@@ -80,7 +85,12 @@
                         <td>{{subcategory.name}}</td>
                         @if(showMonths){
                             @for (month of report.months; track $index) {
-                                <td class="currency">{{subcategory.monthTotals[month]  | number:'1.2-2'}}</td>
+                                @if(subcategory.monthTotals[month]){
+                                <td class="currency" (click)="details(month, fieldVal.name!, subcategory.name!)"  class="clickable-cell">
+                                    {{subcategory.monthTotals[month]  | number:'1.2-2'}}
+                                </td>
+                                }
+                                @else {<td></td>}
                             }
                         }
                         @if(showStats){

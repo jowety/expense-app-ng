@@ -3,9 +3,9 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ViewChild } from '@angular/core';
-import { ImageModule } from 'primeng/image';
 
 import { ButtonModule } from 'primeng/button';
+import { ImageModule } from 'primeng/image';
 import { TooltipModule } from 'primeng/tooltip';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -71,7 +71,7 @@ export class ExpenseListComponent {
       if (this.years.length > 0) {
         //years are sorted descending, so first is most current
         this.expenseService.expenseFilters['year'] = this.years[0];
-        this.getMonths(true);
+        this.getMonths(false);
       }
     });
     this.search.maxResults = this.defaultRows;

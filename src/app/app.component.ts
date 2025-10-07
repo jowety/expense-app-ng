@@ -4,14 +4,14 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Menubar } from 'primeng/menubar';
 import { TabsModule } from 'primeng/tabs';
-import { CommonModule } from '@angular/common';
+
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ExpenseService } from './service/expense.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ButtonModule, Menubar, TabsModule, CommonModule, ConfirmDialog, ToastModule],
+  imports: [RouterOutlet, ButtonModule, Menubar, TabsModule, ConfirmDialog, ToastModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: [ConfirmationService]
