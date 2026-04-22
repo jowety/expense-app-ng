@@ -15,6 +15,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { ExpenseService } from '../../service/expense.service';
 import { Recurring } from '../../model/recurring';
 import { Util } from '../../model/util';
+import { RecurringTotals } from '../../model/recurring-totals';
 
 @Component({
   selector: 'app-recurring-list',
@@ -25,7 +26,7 @@ import { Util } from '../../model/util';
 })
 export class RecurringListComponent {
   recurrings: Recurring[] = [];
-  monthly: number = 0;
+  totals: RecurringTotals = new RecurringTotals();
 
   constructor(private expenseService: ExpenseService, 
     private confirmationService: ConfirmationService, 
@@ -40,8 +41,8 @@ export class RecurringListComponent {
     this.expenseService.getRecurringList().subscribe(data => {
       this.recurrings = data;
     })
-    this.expenseService.getRecurringMonthTotal().subscribe(data => {
-      this.monthly = data;
+    this.expenseService.getRecurringTotals().subscribe(data => {
+      this.totals = data;
     })
   }
 

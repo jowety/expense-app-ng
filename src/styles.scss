@@ -1,6 +1,10 @@
 @import "primeicons/primeicons.css";
 
 /* You can add global styles to this file, and also import other style files */
+.main{
+    padding-bottom: 10px;
+}
+
 body{
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -16,6 +20,23 @@ h1{
     font-size: 16pt;
     color: darkgreen;
     background-color: lightgray;
+}
+
+.pageTitle{
+    padding-top: 10px;
+    padding-left: 10px;
+    font-weight: bold;
+    font-size: 16pt;
+    color: darkgreen;
+}
+.testBanner{
+    padding-top: 10px;
+    margin-left: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-weight: bold;
+    font-size: 14pt;
+    background-color: #f8f7c1;
 }
 .rowdiv{
     display: flex;
@@ -68,31 +89,52 @@ td.currency{
 }
 tr.totalRow{
     font-weight: bold;
+    background-color: #f8f7c1;
 }
 tr.categoryRow{
     background-color: #e1f8f6;
 }
-tr.subcategoryRow{
+td.creditAmount {
+    background-color: #e1f8f6;
 }
-
-.clickable-cell {
+td.daysRemainHighlight {
+    // background-color: #f8f7c1;
+    font-weight: bold;
+}
+tr.oddRow{
+    background-color: rgb(229, 229, 229);
+}
+td.clickable-cell {
   cursor: pointer;
 }
-
-.clickable-cell:hover {
+td.clickable-cell:hover {
   background-color: #f8f7c1; /* Light grey background on hover */
+}
+.filterActive{
+    background-color: #ecfdf5 !important;
+    font-weight: bold !important;
+    color: darkgreen !important;
 }
 .container{
     display: flex; /* Enables flexbox layout */
-  align-items: center; /* Aligns items vertically in the center */
   justify-content: left; /* Distributes items with space between them */
   /* Or use justify-content: flex-start;  for left alignment, flex-end for right alignment, etc. */
+}
+.center{
+  align-items: center; /* Aligns items vertically in the center */
 }
 .budgetCellOk{
     background-color: lightgreen;
 }
 .budgetCellOver{
     background-color: rgb(248, 196, 213);
+}
+.parent-div{
+    display: flex;
+    flex-direction: column;
+}
+.bottom{
+    margin-top: auto;
 }
 
 /* your-component.component.css */

@@ -35,7 +35,7 @@ export const routes: Routes = [
 	{ path: 'categoryForm/:editId', component: CategoryFormComponent, title: "Category Edit"  },
 	{ path: 'subcategoryForm', component: SubcategoryFormComponent, title: "Subcategory Edit"  },
 	{ path: 'subcategoryForm/:editId', component: SubcategoryFormComponent, title: "Subcategory Edit"  },
-	{ path: 'recurringList', component: RecurringListComponent, title: "Recurring"  },
+	{ path: 'recurringList', component: RecurringListComponent, title: "Recurring Expenses"  },
 	{ path: 'recurringForm', component: RecurringFormComponent, title: "Recurring Edit"  },
 	{ path: 'recurringForm/:editId', component: RecurringFormComponent, title: "Recurring Edit"  },
 

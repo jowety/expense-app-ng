@@ -44,6 +44,14 @@
                     class="selector" [ngStyle]="{'width':'145px'}" />
             </div>
         </div>
+        @if (recur.every > 1) {            
+            <div class="rowdiv">
+                <div class="labeldivwide"><label for="startDate">Start Date: </label></div>
+                <div class="valuediv">
+                    <p-datepicker [(ngModel)]="recur.startDate" inputId="startDate" name="startDate" required />
+                </div>
+            </div>
+        }
         <div class="rowdiv">
             <div class="labeldivwide"><label for="on">On Day: </label></div>
             <div class="valuediv">
@@ -80,11 +88,33 @@
                     name="varies" />
             </div>
         </div>
+        @if(recur.amountVaries){
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="useLast">Use Last Amount?: </label></div>
+            <div class="valuediv">
+                <p-togglebutton [(ngModel)]="recur.useLastAmount" onLabel="Yes" offLabel="No" styleClass="w-24"
+                    name="useLast" />
+            </div>
+        </div>
+        }
         <div class="rowdiv">
             <div class="labeldivwide"><label for="insert">Insert On: </label></div>
             <div class="valuediv">
                 <p-select [options]="getInsertOptions()" [(ngModel)]="recur.insertOption" name="insert" class="selector"
                     optionLabel="display" optionValue="value" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="notes">Notes: </label></div>
+            <div class="valuediv">
+                <input type="text" pInputText [(ngModel)]="recur.notes" name="notes" />
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="inactive">Set Inactive?: </label></div>
+            <div class="valuediv">
+                <p-togglebutton [(ngModel)]="recur.inactive" onLabel="Yes" offLabel="No" styleClass="w-24"
+                    name="inactive" />
             </div>
         </div>
 

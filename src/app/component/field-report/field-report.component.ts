@@ -9,60 +9,105 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { ToggleButtonModule } from 'primeng/togglebutton';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { ExpenseService } from '../../service/expense.service';
 import { FieldReport } from '../../model/field-report';
+import { ReportFilters } from '../../model/report-filters';
 
 @Component({
   selector: 'app-field-report',
-  imports: [TableModule, CommonModule, SelectModule, FormsModule, SelectButtonModule, FloatLabelModule, ToggleSwitchModule, ToggleButtonModule],
+  imports: [TableModule, CommonModule, SelectModule, FormsModule, SelectButtonModule, FloatLabelModule, 
+    ToggleSwitchModule, ToggleButtonModule, TooltipModule],
   templateUrl: './field-report.component.html',
   styleUrl: './field-report.component.scss'
 })
 export class FieldReportComponent {
-  year: number = new Date().getFullYear();
   report: FieldReport = new FieldReport();
-  fields: string[] = ['Category', 'Payee','Account'];
-  field: string  = 'Category';
-  collapse: boolean = false;
-  showMonths: boolean = true;
-  showStats: boolean = false;
+  years: number[] = [];
+  fields: string[] = ['Category', 'Payee','Account', 'Credit'];
 
-  constructor(private service: ExpenseService, public router: Router) {
+  constructor(private expenseService: ExpenseService, public router: Router) {
   }
   ngOnInit() {
+    this.expenseService.getAvailableYears().subscribe(data => {
+      this.years = data;
+      if (this.years.length > 0) {
+        //years are sorted descending, so first is most current
+        this.getFilters().year = this.years[0];
+      }
+    });
+    if(!this.getFilters().year) this.getFilters().year = new Date().getFullYear();
     this.load();
     //alert(JSON.stringify(this.report));
   }
 
 
   load() {
-    this.service.getFieldReport(this.year, this.field.toLowerCase()).subscribe(
-      data => this.report = data);
+    const year = this.getFilters().year;
+    if (year !== null) {
+      this.expenseService.getFieldReport(year, this.getFilters().field.toLowerCase()).subscribe(
+        data => this.report = data);
+    }
+  }
+  getFilters(){
+    return this.expenseService.reportFilters;
+  }
+  getReportMonths(){
+    let months: string[] = [];
+    let current: string[] = [];
+    if(this.getFilters().monthSortLR){
+        months = this.report.months;
+        current = months.slice(months.length-1);
+    } 
+    else{
+      if(this.getFilters().monthsReversed == null){
+        this.getFilters().monthsReversed = [...this.report.months].reverse();
+      }
+      months = this.getFilters().monthsReversed!;
+      current = months.slice(0,1);
+    }
+    if(this.getFilters().showMonths){
+      return months;
+    }
+    else return current;
+  }
+  getFieldClass(idx: number){
+    if(this.getFilters().field === 'Category') return "categoryRow";
+    else if(idx % 2 !== 0) return "oddRow";
+    else return "";
   }
 
-  details(month:string, fieldValue:string, subCategory:string | null){
+  details(month:string | null, fieldValue:string, subCategory:string | null){
     //pass in month, fieldValue, subCategory if present
     //set into filters
-    let filters = this.service.expenseFilters;
-    filters.month = month;
-    if(this.field === 'Category'){
-      filters.category = fieldValue;
-      filters.subcategory = subCategory;
-      filters.account = null;
-      filters.payee = null;
+    let expFilters = this.expenseService.expenseFilters;
+    expFilters.year = this.getFilters().year;
+    expFilters.month = month;
+    if(this.getFilters().field === 'Category'){
+      expFilters.category = fieldValue;
+      expFilters.subcategory = subCategory;
+      expFilters.account = null;
+      expFilters.payee = null;
     }       
-    else if(this.field === 'Account'){ 
-      filters.account = fieldValue;
-      filters.category = null;
-      filters.subcategory = null;
-      filters.payee = null;
+    else if(this.getFilters().field === 'Account'){ 
+      expFilters.account = fieldValue;
+      expFilters.category = null;
+      expFilters.subcategory = null;
+      expFilters.payee = null;
     }
-    else if(this.field === 'Payee') {
-      filters.payee = fieldValue;
-      filters.account = null;
-      filters.category = null;
-      filters.subcategory = null;
+    else if(this.getFilters().field === 'Payee') {
+      expFilters.payee = fieldValue;
+      expFilters.account = null;
+      expFilters.category = null;
+      expFilters.subcategory = null;
+    }
+    else if(this.getFilters().field === 'Credit'){ 
+      expFilters.account = fieldValue;
+      expFilters.category = null;
+      expFilters.subcategory = null;
+      expFilters.payee = null;
+      expFilters.closingView = true;
     }
     this.router.navigate(['/expenseList']);
   }

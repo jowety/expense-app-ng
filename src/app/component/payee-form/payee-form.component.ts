@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { ExpenseService } from '../../service/expense.service';
@@ -17,7 +18,7 @@ import { Subcategory } from '../../model/subcategory';
 
 @Component({
   selector: 'app-payee-form',
-  imports: [SelectModule, FormsModule, ButtonModule, InputTextModule],
+  imports: [SelectModule, FormsModule, ButtonModule, InputTextModule, ToggleButtonModule],
   templateUrl: './payee-form.component.html',
   styleUrl: './payee-form.component.scss'
 })

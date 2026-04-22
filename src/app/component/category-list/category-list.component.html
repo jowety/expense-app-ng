@@ -31,21 +31,21 @@
                     <i class="pi pi-trash"></i></p-button>}
             </td>
         </tr>
-        @for (subcat of subCategoryMap[category.id!]; track $index){
-            <tr>
+        @for (subcat of subCategoryMap[category.id!]; track $index; let idx = $index){
+            <tr [class.oddRow]="idx % 2 !== 0">
                 <td></td>
                 <td>{{subcat.name}}</td>
                 <td>{{subcat.description}}</td>
                 <td class="currency">{{subcat.budget| currency: 'USD'}}</td>
                 <td>
                     <p-button [routerLink]="['/subcategoryForm', subcat.id]" severity="info" size="small"
-                    [pTooltip]="'Edit ' + subcat.name"><i class="pi pi-pencil"></i></p-button>
+                    [pTooltip]="'Edit ' + subcat.name"  tooltipPosition="left"><i class="pi pi-pencil"></i></p-button>
                 </td>
                 <td>
                     @if(subcat.inUse){<i class="pi pi-lock"></i>}
                     @else {
                         <p-button (click)="confirmDeleteSubcategory(subcat.id!, subcat.name!, $event)" 
-                        [pTooltip]="'Delete ' + subcat.name"
+                        [pTooltip]="'Delete ' + subcat.name" tooltipPosition="left"
                         severity="danger" size="small"><i class="pi pi-trash"></i></p-button>}
                 </td>
             </tr>

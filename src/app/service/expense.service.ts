@@ -12,6 +12,8 @@ import { BudgetReport } from '../model/budget-report';
 import { ExpenseFilters } from '../model/expense-filters';
 import { FieldReport } from '../model/field-report';
 import { Recurring } from '../model/recurring';
+import { ReportFilters } from '../model/report-filters';
+import { RecurringTotals } from '../model/recurring-totals';
 
 @Injectable({
 	providedIn: 'root'
@@ -21,6 +23,7 @@ export class ExpenseService {
 	//Service URLs
 	//private baseUrl: string = "http://localhost:8080/api/";
 	private baseUrl: string = "http://192.168.1.238:8080/api/";
+	private profileUrl: string = this.baseUrl + "profile";
 	private accountUrl: string = this.baseUrl + "account";
 	private payeeUrl: string = this.baseUrl + "payee";
 	private categoryUrl: string = this.baseUrl + "category";
@@ -32,11 +35,19 @@ export class ExpenseService {
 
 	//State management
 	expenseFilters:ExpenseFilters = new ExpenseFilters();
+	reportFilters:ReportFilters = new ReportFilters();
 	expenseEdit: Expense = new Expense();
 	expenseEditCategory: Category | null = null;
+	profile: string = "";
 
 	constructor(private http: HttpClient) {
-		console.log("ExpenseService constructor");
+		this.getProfiles().subscribe(data => {
+			if(data.length > 0) this.profile = data[0];
+		});
+	 }
+
+	 public getProfiles(): Observable<string[]>{
+		return this.http.get<string[]>(this.profileUrl);
 	 }
 
 	//Expenses 
@@ -133,8 +144,8 @@ export class ExpenseService {
 	public deleteRecurring(id: number) {
 		return this.http.delete(this.recurringUrl + "/" + id);
 	}
-	public getRecurringMonthTotal(): Observable<number> {
-		return this.http.get<number>(this.recurringUrl + "/monthtotal");
+	public getRecurringTotals(): Observable<RecurringTotals> {
+		return this.http.get<RecurringTotals>(this.recurringUrl + "/totals");
 	}
 	//Reports
 	public getBudgetReport(year: number, month: string) {
@@ -150,6 +161,12 @@ export class ExpenseService {
 	}
 	public getAvailableMonths(year:number){
 		return this.http.get<string[]>(this.expenseViewUrl + "/months", { params: { 'year': year } });
+	}	
+	public getClosingYears(){
+		return this.http.get<number[]>(this.expenseViewUrl + "/closingyears");
+	}
+	public getClosingMonths(year:number){
+		return this.http.get<string[]>(this.expenseViewUrl + "/closingmonths", { params: { 'year': year } });
 	}
 
 	//TESTS

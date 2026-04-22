@@ -4,6 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Menubar } from 'primeng/menubar';
 import { TabsModule } from 'primeng/tabs';
+import { Title } from '@angular/platform-browser';
 
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
@@ -17,20 +18,16 @@ import { ExpenseService } from './service/expense.service';
   providers: [ConfirmationService]
 })
 export class AppComponent {
-  title = 'Expense Manager';
   items: MenuItem[] | undefined;
 
-  constructor(private expenseService: ExpenseService, private router: Router,
+  constructor(private expenseService: ExpenseService, private router: Router, public titleService: Title,
     private confirmationService: ConfirmationService, private messageService: MessageService) { }
     
   ngOnInit() {
     this.items = [
       {label: 'Expenses', routerLink: '/expenseList'},
-      {label: 'Reports', 
-        items:[
-          {label: 'Expense Totals', routerLink: '/fieldReport'},
-          {label: 'Budget Report', routerLink: '/budgetReport'}
-        ]},
+      {label: 'Totals', routerLink: '/fieldReport'},
+      {label: 'Budget', routerLink: '/budgetReport'},
       {label: "Setup", 
         items: [
           {label: 'Accounts', routerLink: '/accountList'},
@@ -40,5 +37,9 @@ export class AppComponent {
         ]
       }
     ]
+  }
+
+  getProfile(){
+    return this.expenseService.profile;
   }
 }

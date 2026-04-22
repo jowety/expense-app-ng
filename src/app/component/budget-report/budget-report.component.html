@@ -1,4 +1,4 @@
-<div class="card" style="padding-top: 10px">
+<div class="card" style="padding-top: 20px">
     <div class="p-fluid form-row">
         <p-float-label>
             <label for="year">Year:</label>
@@ -47,7 +47,7 @@
         </tr>
         @for (subcategory of category.subcategories; track $index; let idx = $index) {
         <!--Subcategory Totals-->
-        <tr class="subcategoryRow">
+        <tr class="subcategoryRow" [class.oddRow]="idx % 2 !== 0">
             <td></td>
             <td>{{subcategory.name}}</td>
             <td class="currency">{{subcategory.budget| currency: 'USD'}}</td>

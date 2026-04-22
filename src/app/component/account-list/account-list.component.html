@@ -1,26 +1,30 @@
 <p-button [routerLink]="['/accountForm']" label="New Account" size="small"/>
 
-<p-table [value]="accounts" [paginator]="false"
+<p-table [value]="accounts" [paginator]="false" stripedRows
         [tableStyle]="{ 'min-width': '50rem' }" >
         <ng-template #header>
             <tr>
                 <th pSortableColumn="name">Name <p-sortIcon field="name" /></th>
                 <th pSortableColumn="type">Type <p-sortIcon field="type" /></th>
+                <th pSortableColumn="closes">Closes <p-sortIcon field="closes" /></th>
+                <th pSortableColumn="due">Due <p-sortIcon field="due" /></th>
             </tr>
         </ng-template>
         <ng-template #body let-account>
             <tr>                
                 <td>{{ account.name }}</td>
                 <td>{{ account.type }}</td>
+                <td>{{ account.closes }}</td>
+                <td>{{ account.due }}</td>
                 <td>
                     <p-button [routerLink]="['/accountForm', account.id]" 
-                    [pTooltip]="'Edit ' + account.name" severity="info" size="small">
+                    [pTooltip]="'Edit ' + account.name" severity="info" size="small" tooltipPosition="left">
                         <i class="pi pi-pencil"></i>
                     </p-button>
                     @if(account.inUse){<i class="pi pi-lock"></i>}
                     @else{
                         <p-button (click)="confirmDelete(account.id, account.name, $event)" 
-                        [pTooltip]="'Delete ' + account.name" severity="danger" size="small">
+                        [pTooltip]="'Delete ' + account.name" severity="danger" size="small" tooltipPosition="left">
                             <i class="pi pi-trash"></i>
                         </p-button>
                     }

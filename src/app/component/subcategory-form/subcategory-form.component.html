@@ -39,6 +39,12 @@
                 <p-button label="Clear" (onClick)="subcategory.budget = null" size="small" severity="info" />
             </div>
         </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="exclude">Excluded?: </label></div>
+            <div class="valuediv">
+                <p-togglebutton [(ngModel)]="subcategory.excluded" onLabel="Yes" offLabel="No" styleClass="w-24" name="estimate"/>
+            </div>
+        </div>
         <br />
         <div style="text-align: center;">
             <p-button type="submit" [disabled]="!payeeForm.form.valid">Save</p-button>

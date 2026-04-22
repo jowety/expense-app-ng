@@ -21,6 +21,20 @@
                     required class="selector"/>
             </div>
         </div>
+        @if (account.type === 'CREDIT') {
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="closes">Closes: </label></div>
+            <div class="valuediv">
+                <p-select [options]="daysForMonthFreq" [(ngModel)]="account.closes" name="closes" class="selector" required/>
+            </div>
+        </div>
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="due">Due: </label></div>
+            <div class="valuediv">
+                <p-select [options]="daysForMonthFreq" [(ngModel)]="account.due" name="due" class="selector" required/>
+            </div>
+        </div>
+        }
         <br />
         <div style="text-align: center;">
             <p-button type="submit" [disabled]="!payeeForm.form.valid">Save</p-button>

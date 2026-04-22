@@ -22,6 +22,19 @@
                 <p-select [options]="accounts" [(ngModel)]="getExpense().account" name="account" optionLabel="name" required
                     class="selector" />
             </div>
+           @if(getExpense().account && getExpense().account!.type === 'CREDIT') {
+            <span style="margin-left: 10px;">Closes on the {{getExpense().account?.closes}}@switch(getExpense().account?.closes){
+                    @case(1) {st}
+                    @case(21) {st}
+                    @case(31) {st}
+                    @case(2) {nd}
+                    @case(22) {nd}
+                    @case(3) {rd}
+                    @case(23) {rd}
+                    @default {th}
+                }
+            </span>
+           }
         </div>
         <div class="rowdiv">
             <div class="labeldiv"><label for="category">{{isSplit? 'Primary ':''}}Category: </label></div>

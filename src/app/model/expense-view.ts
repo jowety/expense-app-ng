@@ -12,4 +12,8 @@ export class ExpenseView {
         notes: string | null = null;
         autoInsert: boolean = false;
         estimate: boolean = false;
+        closingDate: Date | string | null = null;
+        closingYear: number | null = null;
+        closingMonthNumber: number | null = null;
+        closingMonthString: string | null = null;
 }

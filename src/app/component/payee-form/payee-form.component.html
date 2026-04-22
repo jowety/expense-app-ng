@@ -36,6 +36,12 @@
             <p-button label="New" (onClick)="forward('subcategoryForm')" size="small" pTooltip="New Subcategory"/>
             </div>
         </div>
+        <div class="rowdiv">
+            <div class="labeldivwide"><label for="exclude">Excluded?: </label></div>
+            <div class="valuediv">
+                <p-togglebutton [(ngModel)]="payee.excluded" onLabel="Yes" offLabel="No" styleClass="w-24" name="estimate"/>
+            </div>
+        </div>
 
         <br />
         <div style="text-align: center;">

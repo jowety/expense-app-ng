@@ -12,10 +12,11 @@ import { Category } from '../../model/category';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Subcategory } from '../../model/subcategory';
 import { InputNumber } from 'primeng/inputnumber';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 
 @Component({
   selector: 'app-subcategory-form',
-  imports: [SelectModule, FormsModule, ButtonModule, InputTextModule, InputNumber],
+  imports: [SelectModule, FormsModule, ButtonModule, InputTextModule, InputNumber, ToggleButtonModule],
   templateUrl: './subcategory-form.component.html',
   styleUrl: './subcategory-form.component.scss'
 })

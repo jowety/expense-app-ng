@@ -4,4 +4,5 @@ export class Category {
     description: string | null = null;
     budget: number | null = null;
     inUse: boolean | null = null;
+    excluded: boolean = false;
 }

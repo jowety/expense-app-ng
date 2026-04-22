@@ -3,10 +3,13 @@
     <div style="display:flex">
       <img src="logo-192x192.png" height="50" width="50"/>
       <p-menubar [model]="items" [style]="{'width': '400px'}"/>
+      <span class="pageTitle">{{titleService.getTitle()}}</span>
+      @if (getProfile() === 'test') {
+      <span class="testBanner">TEST DATA</span>
+      }
     </div>
     <p-confirmdialog />
     <p-toast position="top-center"/>
   </div>
 </main>
-<br/>
 <router-outlet />

@@ -10,4 +10,5 @@ export class Payee {
     categoryDefault: Category | null = null;
     subcategoryDefault: Subcategory | null = null;
     inUse: boolean | null = null;
+    excluded: boolean = false;
 }

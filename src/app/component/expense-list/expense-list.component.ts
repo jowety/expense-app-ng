@@ -19,6 +19,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 import { ExpenseService } from '../../service/expense.service';
 import { ExpenseView } from '../../model/expense-view';
+import { Expense } from '../../model/expense';
 import { Search } from '../../model/search';
 import { ExpenseFilters } from '../../model/expense-filters';
 
@@ -34,6 +35,7 @@ import { ExpenseFilters } from '../../model/expense-filters';
 export class ExpenseListComponent {
   expenses: ExpenseView[] = [];
   search: Search = new Search();
+  payees: string[] = [];
   accounts: string[] = [];
   //account: string | null = null;
   categories: string[] = [];
@@ -48,15 +50,17 @@ export class ExpenseListComponent {
   totalAmount: number = 0;
   @ViewChild('myTable')
   myTable: Table | undefined;
-  defaultRows: number = 25;
   monthsLoaded: boolean = false;
-
+ 
   constructor(private expenseService: ExpenseService, private router: Router,
     private confirmationService: ConfirmationService, private messageService: MessageService) {
 
   }
 
   ngOnInit() {
+    this.expenseService.getPayees().subscribe(data => {
+      this.payees = data.map(payee => payee.name!);
+    });
     this.expenseService.getAccounts().subscribe(data => {
       this.accounts = data.map(acct => acct.name!);
     });
@@ -66,43 +70,57 @@ export class ExpenseListComponent {
     this.expenseService.getSubcategories().subscribe(data => {
       this.subcategories = data.map(acct => acct.name!);
     });
-    this.expenseService.getAvailableYears().subscribe(data => {
-      this.years = data;
-      if (this.years.length > 0) {
-        //years are sorted descending, so first is most current
-        this.expenseService.expenseFilters['year'] = this.years[0];
-        this.getMonths(false);
-      }
-    });
-    this.search.maxResults = this.defaultRows;
-    this.search.orders.push("date desc");
-    // this.getData();
+    if(!this.getFilters().year) this.getFilters().year = new Date().getFullYear();
+    this.getYears();
+    this.getMonths();
   }
   getFilters(){
     return this.expenseService.expenseFilters;
   }
-  getMonths(setCurrent: boolean) {
-    this.expenseService.getAvailableMonths(this.expenseService.expenseFilters.year!).subscribe(data => {
-      this.months = data;
-      if (this.months.length > 0 && setCurrent) {
-        let thisMonth = new Date().toLocaleString('default', { month: 'long' });
-        if(this.months.includes(thisMonth)){
-          this.expenseService.expenseFilters['month'] = thisMonth;
-          this.search.filters.push("monthString equals " + this.expenseService.expenseFilters.month);
-        }
+  getYears(){
+    if(this.expenseService.expenseFilters.closingView){
+      this.expenseService.getClosingYears().subscribe(data => {
+        this.years = data;
+      });
+    }
+    else{
+      this.expenseService.getAvailableYears().subscribe(data => {
+        this.years = data;
+      });
+    }
+  }
+  getMonths() {
+    if(this.expenseService.expenseFilters.year){
+      if(this.expenseService.expenseFilters.closingView){
+        this.expenseService.getClosingMonths(this.expenseService.expenseFilters.year!).subscribe(data => {
+          this.months = data;
+        });
       }
-      this.monthsLoaded = true;
-    })
+      else{
+        this.expenseService.getAvailableMonths(this.expenseService.expenseFilters.year!).subscribe(data => {
+          this.months = data;   
+        });
+      }
+  }
+  }
+  closingViewChanged() {
+    this.getYears();
+    this.getMonths();
+    this.makeSearchFilters();
+    this.getData();
   }
   yearChanged() {
-    this.getMonths(false);
+    this.getMonths();
+    this.makeSearchFilters();
+    this.getData();
   }
   monthChanged() {
-    this.search.filters = this.search.filters.filter(s => !s.startsWith("monthString"));
-    if (this.expenseService.expenseFilters.month != null) {
-      this.search.filters.push("monthString equals " + this.expenseService.expenseFilters.month);
-    }
+    //this.search.filters = this.search.filters.filter(s => !s.startsWith("monthString"));
+    //if (this.expenseService.expenseFilters.month != null) {
+    //  this.search.filters.push("monthString equals " + this.expenseService.expenseFilters.month);
+    //}
     this.search.firstResult = 0;
+    this.makeSearchFilters();
     this.getData();
   }
   pageChange(event: TableLazyLoadEvent | null) {
@@ -151,6 +169,15 @@ export class ExpenseListComponent {
           }
           else filters['subcategory'] = null;
         }
+        const notesFilters: FilterMetadata[] = event.filters!['notes'] as FilterMetadata[];
+        if (notesFilters) {
+          const notesFilter = notesFilters[0];
+          if (notesFilter.value) {
+            filters.notes = notesFilter.value;
+          } else {
+            filters.notes = null;
+          }
+        }
       }
     }
     this.makeSearchFilters();
@@ -180,11 +207,19 @@ export class ExpenseListComponent {
       this.search.orders.push("date desc");
       this.search.orders.push("payee");
     }
-    if (filters.month) this.search.filters.push("monthString equals " + filters.month);
+    if(this.expenseService.expenseFilters.closingView){
+      if(filters.year) this.search.filters.push("closingYear equals " + filters.year);
+      if (filters.month) this.search.filters.push("closingMonthString equals " + filters.month);
+    }
+    else{
+      if(filters.year) this.search.filters.push("year equals " + filters.year);
+      if (filters.month) this.search.filters.push("monthString equals " + filters.month);
+    }
     if (filters.payee) this.search.filters.push(`payee startswith_ci ${filters.payee}`);
     if (filters.account) this.search.filters.push(`account eq ${filters.account}`);
     if (filters.category) this.search.filters.push(`category eq ${filters.category}`);
     if (filters.subcategory) this.search.filters.push(`subcategory eq ${filters.subcategory}`);
+    if (filters.notes) this.search.filters.push(`notes contains_ci ${filters.notes}`);
     if(filters.hideFuture){
       //substring on the date returns just the yyyy-mm-dd portion
       //'localDate:' prefix tells the SimpleSearchConverter to convert the string to a LocalDate object
@@ -200,6 +235,19 @@ export class ExpenseListComponent {
       this.totalAmount = data;
     });
   }
+  copy(id:number){
+    this.expenseService.getExpense(id.toString()).subscribe(expense => {      
+      this.expenseService.expenseEdit = new Expense();
+      this.expenseService.expenseEdit.account = expense.account;
+      this.expenseService.expenseEdit.payee = expense.payee;
+      this.expenseService.expenseEditCategory = expense.subcategory!.category;
+      this.expenseService.expenseEdit.subcategory = expense.subcategory;
+      this.expenseService.expenseEdit.amount = expense.amount;
+      this.expenseService.expenseEdit.notes = expense.notes;
+      this.router.navigate(['/expenseForm']);
+    })
+  }
+
   confirmDelete(exp: ExpenseView, event: Event) {
     let d = new Date(exp.date as string).toDateString();
     this.confirmationService.confirm({

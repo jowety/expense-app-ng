@@ -1,6 +1,6 @@
 <p-button [routerLink]="['/payeeForm']" label="New Payee" size="small"/>
 
-<p-table [value]="payees" [paginator]="false"
+<p-table [value]="payees" [paginator]="false" stripedRows
         [tableStyle]="{ 'min-width': '50rem' }" >
         <ng-template #header>
             <tr>
@@ -20,13 +20,13 @@
                 <td>{{ payee.subcategoryDefault?.name }}</td>
                 <td>
                     <p-button [routerLink]="['/payeeForm', payee.id]" 
-                    [pTooltip]="'Edit ' + payee.name"severity="info" size="small">
+                    [pTooltip]="'Edit ' + payee.name"severity="info" size="small" tooltipPosition="left">
                         <i class="pi pi-pencil"></i>
                     </p-button>
                     @if(payee.inUse){<i class="pi pi-lock"></i>}
                     @else{
                         <p-button (click)="confirmDelete(payee.id, payee.name, $event)" 
-                        [pTooltip]="'Delete ' + payee.name" severity="danger" size="small">
+                        [pTooltip]="'Delete ' + payee.name" severity="danger" size="small" tooltipPosition="left">
                             <i class="pi pi-trash"></i>
                         </p-button>
                     }

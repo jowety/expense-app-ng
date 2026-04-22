@@ -7,6 +7,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { DatePicker } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { MessageModule } from 'primeng/message';
@@ -24,7 +25,8 @@ import { Util } from '../../model/util';
 
 @Component({
   selector: 'app-recurring-form',
-  imports: [FormsModule, InputNumber, InputTextModule, ToggleButtonModule, CommonModule, ButtonModule, SelectModule, MessageModule, RouterLink, TooltipModule],
+  imports: [FormsModule, InputNumber, InputTextModule, ToggleButtonModule, CommonModule, 
+    ButtonModule, SelectModule, MessageModule, RouterLink, TooltipModule, DatePicker],
   templateUrl: './recurring-form.component.html',
   styleUrl: './recurring-form.component.scss'
 })
