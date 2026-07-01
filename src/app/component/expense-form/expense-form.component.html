@@ -1,140 +1,169 @@
 <div class="title">{{title}}</div>
 <form (ngSubmit)="onSubmit()" #expenseForm="ngForm">
     <div style="width: 500px; padding-top: 10px;">
+        
         <div class="rowdiv">
             <div class="labeldiv"><label for="date">Date: </label></div>
             <div class="valuediv">
                 <p-datepicker [(ngModel)]="getExpense().date" inputId="date" name="date" required />
             </div>
         </div>
+
+        <div class="rowdiv">
+            <div class="labeldiv"><label for="pushStatement">Push Statement?: </label></div>
+            <div class="valuediv">
+                <p-togglebutton [(ngModel)]="getExpense().pushStatement" onLabel="Yes" offLabel="No" styleClass="w-24" name="push"/>
+            </div>
+        </div>
+
         <div class="rowdiv">
             <div class="labeldiv"><label for="payee">Payee: </label></div>
             <div class="valuediv">
                 <p-select [options]="payees" [(ngModel)]="getExpense().payee" name="payee" optionLabel="name" required
                     (onChange)="loadPayeeDefaults()" [filter]="true" filterBy="name" class="selector" />
-            <p-button label="New" (onClick)="forward('payeeForm')" size="small" 
-            pTooltip="New Payee"/>
+                <p-button label="New" (onClick)="forward('payeeForm')" size="small" pTooltip="New Payee"/>
             </div>
         </div>
+
         <div class="rowdiv">
             <div class="labeldiv"><label for="account">Account: </label></div>
             <div class="valuediv">
-                <p-select [options]="accounts" [(ngModel)]="getExpense().account" name="account" optionLabel="name" required
-                    class="selector" />
+                <p-select [options]="accounts" [(ngModel)]="getExpense().account" name="account" optionLabel="name" required class="selector" />
             </div>
-           @if(getExpense().account && getExpense().account!.type === 'CREDIT') {
-            <span style="margin-left: 10px;">Closes on the {{getExpense().account?.closes}}@switch(getExpense().account?.closes){
-                    @case(1) {st}
-                    @case(21) {st}
-                    @case(31) {st}
-                    @case(2) {nd}
-                    @case(22) {nd}
-                    @case(3) {rd}
-                    @case(23) {rd}
-                    @default {th}
-                }
-            </span>
-           }
+            @if(getExpense().account && getExpense().account!.type === 'CREDIT') {
+                <span style="margin-left: 10px;">Closes on the 
+                    {{getExpense().account?.closes}}@switch(getExpense().account?.closes){
+                        @case(1) {st} @case(21) {st} @case(31) {st}
+                        @case(2) {nd} @case(22) {nd}
+                        @case(3) {rd} @case(23) {rd}
+                        @default {th}
+                    }
+                </span>
+            }
         </div>
-        <div class="rowdiv">
-            <div class="labeldiv"><label for="category">{{isSplit? 'Primary ':''}}Category: </label></div>
-            <div class="valuediv">
-                <p-select [options]="categories" [(ngModel)]="expenseService.expenseEditCategory" name="category" optionLabel="name"
-                    (onChange)="loadSubs()" required class="selector" dataKey="id"/>
-            <p-button label="New" (onClick)="forward('categoryForm')" size="small" 
-            pTooltip="New Category"/>
-            </div>
-        </div>
-        <div class="rowdiv">
-            <div class="labeldiv"><label for="subcategory">{{isSplit? 'Primary ':''}}Subcategory: </label></div>
-            <div class="valuediv">
-                <p-select [options]="subcategories" [(ngModel)]="getExpense().subcategory" name="subcategory"
-                    optionLabel="name" required class="selector" dataKey="id"/>
-            <p-button label="New" (onClick)="forward('subcategoryForm')" size="small" 
-            pTooltip="New Subcategory"/>
-            </div>
-        </div>
+
         @if (!isSplit) {
-        <div class="rowdiv">
-            <div class="labeldiv"><label for="amount">Amount: </label></div>
-            <div class="valuediv">
-                    <div class="p-field-with-icon">
-                        <i class="pi pi-dollar custom-input-icon"></i>
-                        <p-inputnumber [(ngModel)]="getExpense().amount" inputId="amount" mode="decimal" 
-                        [minFractionDigits]="2" [maxFractionDigits]="2" name="amount" required />
-                    </div>
+            <div class="rowdiv">
+                <div class="labeldiv"><label for="category">Category: </label></div>
+                <div class="valuediv">
+                    <p-select [options]="categories" [(ngModel)]="expenseService.expenseEditCategory" name="category" optionLabel="name"
+                        (onChange)="loadSubs()" required class="selector" dataKey="id"/>
+                    <p-button label="New" (onClick)="forward('categoryForm')" size="small" pTooltip="New Category"/>
+                </div>
             </div>
 
-            <p-button label="Split" (onClick)="enableSplit()" size="small" severity="contrast"/>
-        </div>
-        <div class="rowdiv">
-            <div class="labeldiv"><label for="estimate">Estimate?: </label></div>
-            <div class="valuediv">
-                <p-togglebutton [(ngModel)]="getExpense().estimate" onLabel="Yes" offLabel="No" styleClass="w-24" name="estimate"/>
-            </div>
-        </div>
-        }
-        <div class="rowdiv">
-            <div class="labeldiv"><label for="notes">{{isSplit? 'Primary ':''}}Notes: </label></div>
-            <div class="valuediv">
-                <input type="text" pInputText [(ngModel)]="getExpense().notes" name="notes" />
-            </div>
-        </div>
-        @if (isSplit) {
-        <div class="rowdiv" [ngStyle]="{'height':'35px'}">
-            <div class="labeldiv"><label for="remain">Primary Amt: </label></div>
-            <div class="valuediv">{{getExpense().amount | currency}}</div>
-        </div>
-        <div class="rowdiv">
-            <div class="labeldiv"><label for="total">Total: </label></div>
-            <div class="valuediv">
-                <div class="p-field-with-icon">
-                    <i class="pi pi-dollar custom-input-icon"></i>
-                    <p-inputnumber [(ngModel)]="total" inputId="total" mode="decimal"
-                        [minFractionDigits]="2" [maxFractionDigits]="2" name="total" required 
-                        (ngModelChange)="updateRemain()"/>
+            <div class="rowdiv">
+                <div class="labeldiv"><label for="subcategory">Subcategory: </label></div>
+                <div class="valuediv">
+                    <p-select [options]="subcategories" [(ngModel)]="getExpense().subcategory" name="subcategory" optionLabel="name" required class="selector" dataKey="id"/>
+                    <p-button label="New" (onClick)="forward('subcategoryForm')" size="small" pTooltip="New Subcategory"/>
                 </div>
             </div>
-            <p-button label="Unsplit" (onClick)="removeSplit()" size="small" severity="contrast"/>
-        </div>
-        }
-        @if (isSplit) {
-            @for (split of splits; track $index) {
-            <div ngClass="splitdiv">
-                <div class="rowdiv">
-                    <div class="labeldiv"><label for="splitcategory">Split {{$index + 1}} Category: </label></div>
-                    <div class="valuediv">
-                        <p-select [options]="categories" [(ngModel)]="split.category" name="splitcategory" optionLabel="name"
-                            (onChange)="loadSplitSubs($index)" required class="selector" />
+
+            <div class="rowdiv">
+                <div class="labeldiv"><label for="amount">Amount: </label></div>
+                <div class="valuediv">
+                    <div class="p-field-with-icon">
+                        <i class="pi pi-dollar custom-input-icon"></i>
+                        <p-inputnumber [(ngModel)]="getExpense().amount" inputId="amount" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" name="amount" required />
                     </div>
                 </div>
-                <div class="rowdiv">
-                    <div class="labeldiv"><label for="splitsubcategory">Split {{$index + 1}} Subcategory: </label></div>
-                    <div class="valuediv">
-                        <p-select [options]="split.subcategories" [(ngModel)]="split.subcategory" name="splitsubcategory"
-                            optionLabel="name" required class="selector" />
+                <p-button label="Split" (onClick)="enableSplit()" size="small" severity="contrast"/>
+            </div>
+
+            <div class="rowdiv">
+                <div class="labeldiv"><label for="estimate">Estimate?: </label></div>
+                <div class="valuediv">
+                    <p-togglebutton [(ngModel)]="getExpense().estimate" onLabel="Yes" offLabel="No" styleClass="w-24" name="estimate"/>
+                </div>
+            </div>
+            <div class="rowdiv">
+                <div class="labeldiv"><label for="dateEstimate">Date Estimate?: </label></div>
+                <div class="valuediv">
+                    <p-togglebutton [(ngModel)]="getExpense().dateEstimate" onLabel="Yes" offLabel="No" styleClass="w-24" name="dateEstimate"/>
+                </div>
+            </div>
+
+            <div class="rowdiv">
+                <div class="labeldiv"><label for="notes">Notes: </label></div>
+                <div class="valuediv">
+                    <input type="text" pInputText [(ngModel)]="getExpense().notes" name="notes" />
+                </div>
+            </div>
+
+        } @else {
+            <div class="rowdiv">
+                <div class="labeldiv"><label for="total">Total Amount: </label></div>
+                <div class="valuediv">
+                    <div class="p-field-with-icon">
+                        <i class="pi pi-dollar custom-input-icon"></i>
+                        <p-inputnumber [(ngModel)]="getExpense().amount" inputId="amount" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" name="total" required (ngModelChange)="updateRemain()"/>
                     </div>
                 </div>
-                <div class="rowdiv">
-                    <div class="labeldiv"><label for="splitamount">Split {{$index + 1}} Amount: </label></div>
-                    <div class="valuediv">
-                        <div class="p-field-with-icon">
-                            <i class="pi pi-dollar custom-input-icon"></i>
-                            <p-inputnumber [(ngModel)]="split.amount" inputId="splitamount" mode="decimal"
-                                [minFractionDigits]="2" [maxFractionDigits]="2" name="splitamount" required 
-                                (ngModelChange)="updateRemain()"/>
+                <p-button label="Unsplit" (onClick)="removeSplit()" size="small" severity="contrast"/>
+            </div>
+
+            <div class="rowdiv">
+                <div class="labeldiv"><label for="estimate">Estimate?: </label></div>
+                <div class="valuediv">
+                    <p-togglebutton [(ngModel)]="getExpense().estimate" onLabel="Yes" offLabel="No" styleClass="w-24" name="estimate"/>
+                </div>
+            </div>
+            <div class="rowdiv">
+                <div class="labeldiv"><label for="dateEstimate">Date Estimate?: </label></div>
+                <div class="valuediv">
+                    <p-togglebutton [(ngModel)]="getExpense().dateEstimate" onLabel="Yes" offLabel="No" styleClass="w-24" name="dateEstimate"/>
+                </div>
+            </div>
+
+            @for (split of getExpense().splits; track $index) {
+                <div class="splitdiv" style="border-left: 3px solid #6366f1; padding-left: 10px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>Split {{$index + 1}} @if($index === 0) { (Auto-Calculated Primary) }</strong>
+                        @if ($index > 1) {
+                            <p-button label="Remove" (onClick)="deleteSplit($index)" size="small" severity="danger" [text]="true"/>
+                        }
+                    </div>
+
+                    <div class="rowdiv">
+                        <div class="labeldiv"><label>Category: </label></div>
+                        <div class="valuediv">
+                            <p-select [options]="categories" [(ngModel)]="split.category" name="splitcategory-{{$index}}" optionLabel="name"
+                                (onChange)="loadSplitSubs($index)" required class="selector" />
+                        </div>
+                    </div>
+
+                    <div class="rowdiv">
+                        <div class="labeldiv"><label>Subcategory: </label></div>
+                        <div class="valuediv">
+                            <p-select [options]="split.subcategories" [(ngModel)]="split.subcategory" name="splitsubcategory-{{$index}}" optionLabel="name" required class="selector" />
+                        </div>
+                    </div>
+
+                    <div class="rowdiv">
+                        <div class="labeldiv"><label>Amount: </label></div>
+                        <div class="valuediv">
+                            <div class="p-field-with-icon">
+                                <i class="pi pi-dollar custom-input-icon"></i>
+                                <p-inputnumber [(ngModel)]="split.amount" inputId="splitamount-{{$index}}" mode="decimal"
+                                    [minFractionDigits]="2" [maxFractionDigits]="2" name="splitamount-{{$index}}" required 
+                                    [disabled]="$index === 0" (ngModelChange)="updateRemain()"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rowdiv">
+                        <div class="labeldiv"><label>Notes: </label></div>
+                        <div class="valuediv">
+                            <input type="text" pInputText [(ngModel)]="split.notes" name="splitnotes-{{$index}}" />
                         </div>
                     </div>
                 </div>
-                <div class="rowdiv">
-                    <div class="labeldiv"><label for="notes">Split {{$index + 1}} Notes: </label></div>
-                    <div class="valuediv">
-                        <input type="text" pInputText [(ngModel)]="split.notes" name="notes" />
-                    </div>
-                </div>
-            </div>
-
             }
+
+            <div style="margin: 10px 0; text-align: right;">
+                <p-button label="Add Split" icon="pi pi-plus" (onClick)="addSplit()" size="small" severity="secondary"/>
+            </div>
         }
 
         <br />
@@ -142,6 +171,5 @@
             <p-button type="submit" [disabled]="!expenseForm.form.valid" severity="success">Save</p-button>
             <p-button label="Back/Cancel" (onClick)="cancel()" severity="contrast"/>
         </div>
-        <!--<p-button label="check" (onClick)="check()" />-->
     </div>
 </form>

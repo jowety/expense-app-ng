@@ -81,7 +81,7 @@ table.report td{
     padding-top: 3px;
     padding-bottom: 3px;
 }
-td.currency{
+td.align-right{
     text-align: right;
 }
 .selector{
@@ -94,8 +94,13 @@ tr.totalRow{
 tr.categoryRow{
     background-color: #e1f8f6;
 }
-td.creditAmount {
+td.creditOpen {
     background-color: #e1f8f6;
+    font-weight: bold;
+}
+td.creditDue {
+    background-color: #f5d7cd;
+    font-weight: bold;
 }
 td.daysRemainHighlight {
     // background-color: #f8f7c1;
@@ -179,4 +184,13 @@ td.clickable-cell:hover {
 .form-row {
   display: flex; /* Aligns children (your p-float-labels) in a row */
   gap: 1rem;     /* Adds a 1rem space between the elements */
+}
+
+.border-top-thick {
+  border-top-style: solid;
+  border-top-width: thick;
+}
+table.report .border-left-thick {
+  border-left-style: solid;
+  border-left-width: medium;
 }

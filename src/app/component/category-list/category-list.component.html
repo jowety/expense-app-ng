@@ -1,4 +1,19 @@
 
+<div class="top-controls">
+    <div class="budget-total-field">
+        <label for="monthlyBudgetTotal">Monthly Budget Total</label>
+        <p-inputnumber inputId="monthlyBudgetTotal"
+            [(ngModel)]="monthlyBudgetTotal"
+            mode="currency"
+            currency="USD"
+            [minFractionDigits]="2"
+            [maxFractionDigits]="2"
+            [useGrouping]="true"
+            styleClass="w-full" />
+    </div>
+    <p-button label="Update" icon="pi pi-check" severity="success" size="small"
+        (click)="updateMonthlyBudgetTotal()" />
+</div>
 <p-button [routerLink]="['/categoryForm']" label="New Category" size="small"/>
 <p-button [routerLink]="['/subcategoryForm']" label="New Subcategory" size="small"/>
 <table class="categories">

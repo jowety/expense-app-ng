@@ -12,4 +12,5 @@ export class ExpenseFilters {
     rows: number = 100;
     hideFuture: boolean = false;
     closingView: boolean = false;
+    showSplits: boolean = false;
 }

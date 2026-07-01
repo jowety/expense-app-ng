@@ -225,6 +225,12 @@ export class ExpenseListComponent {
       //'localDate:' prefix tells the SimpleSearchConverter to convert the string to a LocalDate object
       this.search.filters.push(`date lte localDate:${new Date().toISOString().slice(0,10)}`);
     }
+    if(filters.showSplits){
+      this.search.filters.push("parent eq false");
+    }
+    else{
+      this.search.filters.push("parentId is null")
+    }
   }
   getData() {
     this.expenseService.getExpenseViews(this.search).subscribe(data => {
@@ -237,13 +243,31 @@ export class ExpenseListComponent {
   }
   copy(id:number){
     this.expenseService.getExpense(id.toString()).subscribe(expense => {      
-      this.expenseService.expenseEdit = new Expense();
-      this.expenseService.expenseEdit.account = expense.account;
-      this.expenseService.expenseEdit.payee = expense.payee;
-      this.expenseService.expenseEditCategory = expense.subcategory!.category;
-      this.expenseService.expenseEdit.subcategory = expense.subcategory;
-      this.expenseService.expenseEdit.amount = expense.amount;
-      this.expenseService.expenseEdit.notes = expense.notes;
+      let newExpense = new Expense();
+      this.expenseService.expenseEdit = newExpense;
+      newExpense.date = new Date();
+      newExpense.account = expense.account;
+      newExpense.payee = expense.payee;
+      newExpense.amount = expense.amount;
+      newExpense.notes = expense.notes;
+      if(expense.subcategory) {
+        this.expenseService.expenseEditCategory = expense.subcategory!.category;
+        newExpense.subcategory = expense.subcategory;
+      }
+      if(expense.splits && expense.splits.length > 0) { 
+        newExpense.parent = true;
+        for (let split of expense.splits) {
+          let newSplit = new Expense();
+          newSplit.account = split.account;
+          newSplit.payee = split.payee;
+          newSplit.amount = split.amount;
+          newSplit.notes = split.notes;
+          newSplit.date = split.date;
+          newSplit.category = split.category;
+          newSplit.subcategory = split.subcategory;
+          newExpense.splits.push(newSplit);
+        }
+      }
       this.router.navigate(['/expenseForm']);
     })
   }

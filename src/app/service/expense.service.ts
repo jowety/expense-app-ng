@@ -14,6 +14,8 @@ import { FieldReport } from '../model/field-report';
 import { Recurring } from '../model/recurring';
 import { ReportFilters } from '../model/report-filters';
 import { RecurringTotals } from '../model/recurring-totals';
+import { RecurringMonthlyTotals } from '../model/recurring-monthly-totals';
+import {environment} from '../../environments/environment';
 
 @Injectable({
 	providedIn: 'root'
@@ -21,8 +23,7 @@ import { RecurringTotals } from '../model/recurring-totals';
 export class ExpenseService {
 
 	//Service URLs
-	//private baseUrl: string = "http://localhost:8080/api/";
-	private baseUrl: string = "http://192.168.1.238:8080/api/";
+	private baseUrl: string = environment.apiUrl + "expenses/";
 	private profileUrl: string = this.baseUrl + "profile";
 	private accountUrl: string = this.baseUrl + "account";
 	private payeeUrl: string = this.baseUrl + "payee";
@@ -32,6 +33,7 @@ export class ExpenseService {
 	private expenseViewUrl: string = this.baseUrl + "expenseview";
 	private reportUrl: string = this.baseUrl + "reports";
 	private recurringUrl: string = this.baseUrl + "recurring";
+	private propertiesUrl: string = this.baseUrl + "properties";
 
 	//State management
 	expenseFilters:ExpenseFilters = new ExpenseFilters();
@@ -147,6 +149,21 @@ export class ExpenseService {
 	public getRecurringTotals(): Observable<RecurringTotals> {
 		return this.http.get<RecurringTotals>(this.recurringUrl + "/totals");
 	}
+	public getRecurringMonthlyTotals(): Observable<RecurringMonthlyTotals> {
+		return this.http.get<RecurringMonthlyTotals>(this.recurringUrl + "/monthlytotals");
+	}
+	public getRecurringAccounts(): Observable<Account[]> {
+		return this.http.get<Account[]>(this.recurringUrl + "/accounts");
+	}
+	public getRecurringPayees(): Observable<Payee[]> {
+		return this.http.get<Payee[]>(this.recurringUrl + "/payees");
+	}
+	public getRecurringCategories(): Observable<Category[]> {
+		return this.http.get<Category[]>(this.recurringUrl + "/categories");
+	}
+	public getRecurringSubcategories(categoryId?: string): Observable<Subcategory[]> {
+		return this.http.get<Subcategory[]>(this.recurringUrl + "/subcategories");
+	}
 	//Reports
 	public getBudgetReport(year: number, month: string) {
 		let params = { params: { 'year': year, 'month': month } };
@@ -167,6 +184,13 @@ export class ExpenseService {
 	}
 	public getClosingMonths(year:number){
 		return this.http.get<string[]>(this.expenseViewUrl + "/closingmonths", { params: { 'year': year } });
+	}
+	//Properties
+	public getMonthlyBudgetTotal(){
+		return this.http.get<number>(this.propertiesUrl + "/monthlybudgettotal");
+	}
+	public saveMonthlyBudgetTotal(total:number){
+		return this.http.post<number>(this.propertiesUrl + "/monthlybudgettotal", total);
 	}
 
 	//TESTS

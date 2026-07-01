@@ -5,19 +5,21 @@
             <p-selectbutton [options]="fields" [(ngModel)]="getFilters().field" aria-labelledby="basic"
                 (onChange)="load()" name="field" />
         </div>
-        <div class="flex flex-column" [ngStyle]="{'padding-left': '10px'}">
-            <label class="mb-2 text-xs">Show:</label>
-            <div class="flex">
-                <p-togglebutton [(ngModel)]="getFilters().showMonths" onLabel="Months" offLabel="Months" />
-                <p-togglebutton [(ngModel)]="getFilters().showStats" onLabel="Stats" offLabel="Stats" />
+        @if (getFilters().field != 'Credit') {
+            <div class="flex flex-column" [ngStyle]="{'padding-left': '10px'}">
+                <label class="mb-2 text-xs">Show:</label>
+                <div class="flex">
+                    <p-togglebutton [(ngModel)]="getFilters().showMonths" onLabel="Months" offLabel="Months" />
+                    <p-togglebutton [(ngModel)]="getFilters().showStats" onLabel="Stats" offLabel="Stats" />
+                </div>
             </div>
-        </div>
-        @if (getFilters().showMonths) {
-        <div class="flex flex-column" [ngStyle]="{'padding-left': '10px'}">
-            <label for="monthSort" class="mb-2 text-xs">Month Sort:</label>
-            <p-togglebutton [(ngModel)]="getFilters().monthSortLR" onIcon="pi pi-arrow-right" onLabel=""
-                offIcon="pi pi-arrow-left" offLabel="" id="monthSort" />
-        </div>
+            @if (getFilters().showMonths) {
+            <div class="flex flex-column" [ngStyle]="{'padding-left': '10px'}">
+                <label for="monthSort" class="mb-2 text-xs">Month Sort:</label>
+                <p-togglebutton [(ngModel)]="getFilters().monthSortLR" onIcon="pi pi-arrow-right" onLabel=""
+                    offIcon="pi pi-arrow-left" offLabel="" id="monthSort" />
+            </div>
+            }
         }
         @if (getFilters().field === 'Category') {
         <div class="flex flex-column" [ngStyle]="{'padding-left': '10px'}">
@@ -26,7 +28,7 @@
         </div>
         }
     </div>
-    <h1>{{getFilters().field}} Totals</h1>
+    <h1>{{getFilters().field}} @if (getFilters().field === 'Credit') {Card} Totals</h1>
     <div class="flex align-items-center mb-3">
         <label for="year" class="mr-2">Year:</label>
         <p-select [options]="years" [(ngModel)]="getFilters().year" (onChange)="load()" name="year" [showClear]="false"
@@ -42,7 +44,7 @@
             <th>{{month}}</th>
             }
             @if(getFilters().showStats){
-            <th>Average</th>
+            <th class="border-left-thick">Average</th>
             <!-- <th>Average 2</th> -->
             <th>Low</th>
             <th>High</th>
@@ -55,19 +57,18 @@
             @if (getFilters().field === 'Category' && !getFilters().collapse) {<td></td>}
             @if (getFilters().field === 'Credit') {<td></td>}
             @for (month of getReportMonths(); track $index) {
-            <td class="currency">{{report.monthTotals[month] | number:'1.2-2'}}</td>
+            <td class="align-right">{{report.monthTotals[month] | number:'1.2-2'}}</td>
             }
             @if(getFilters().showStats){
-            <td class="currency">{{report.stats!.average1| number:'1.2-2'}}</td>
-            <!-- <td class="currency">{{report.stats!.average2| number:'1.2-2'}}</td> -->
-            <td class="currency">{{report.stats!.min| number:'1.2-2'}}</td>
-            <td class="currency">{{report.stats!.max| number:'1.2-2'}}</td>
-            <td class="currency">{{report.stats!.total| number:'1.2-2'}}</td>
+            <td class="align-right border-left-thick">{{report.stats!.average1| number:'1.2-2'}}</td>
+            <td class="align-right">{{report.stats!.min| number:'1.2-2'}}</td>
+            <td class="align-right">{{report.stats!.max| number:'1.2-2'}}</td>
+            <td class="align-right">{{report.stats!.total| number:'1.2-2'}}</td>
             }
         </tr>
         @for (fieldVal of report.fields; track $index; let idx = $index) {
         <!--Category Totals-->
-        <tr [ngClass]="getFieldClass(idx)">
+        <tr [ngClass]="getFieldClass(idx)" [class.border-top-thick]="getFilters().field === 'Credit'">
             <td (click)="details(null, fieldVal.name!, null)" class="clickable-cell"
                 [attr.rowspan]="getFilters().field === 'Credit'? 4 : null"
                 [pTooltip]="'view ' + fieldVal.count">{{fieldVal.name}}</td>
@@ -75,7 +76,10 @@
             @if (getFilters().field === 'Credit') {<td>Amount</td>}
             @for (month of getReportMonths(); track $index) {   
                 @if (fieldVal.monthTotals[month]) {
-                <td class="currency clickable-cell" [class.creditAmount]="getFilters().field === 'Credit'" [class.daysRemainHighlight]="fieldVal.ccDetails?.[month]?.daysRemain != null" (click)="details(month, fieldVal.name!, null)"
+                <td class="align-right clickable-cell" 
+                [class.creditOpen]="fieldVal.ccDetails?.[month]?.status == 'OPEN'" 
+                [class.creditDue]="fieldVal.ccDetails?.[month]?.status == 'DUE'" 
+                (click)="details(month, fieldVal.name!, null)"
                     [pTooltip]="'view ' + fieldVal.monthCounts[month]">
                     {{fieldVal.monthTotals[month] | number:'1.2-2'}}
                 </td>
@@ -83,19 +87,22 @@
                 @else {<td></td>}
             }
             @if(getFilters().showStats){
-            <td class="currency">{{fieldVal.stats!.average1| number:'1.2-2'}}</td>
-            <!-- <td class="currency">{{fieldVal.stats!.average2| number:'1.2-2'}}</td> -->
-            <td class="currency">{{fieldVal.stats!.min| number:'1.2-2'}}</td>
-            <td class="currency">{{fieldVal.stats!.max| number:'1.2-2'}}</td>
-            <td class="currency">{{fieldVal.stats!.total| number:'1.2-2'}}</td>
+            <td class="align-right border-left-thick">{{fieldVal.stats!.average1| number:'1.2-2'}}</td>
+            <!-- <td class="align-right">{{fieldVal.stats!.average2| number:'1.2-2'}}</td> -->
+            <td class="align-right">{{fieldVal.stats!.min| number:'1.2-2'}}</td>
+            <td class="align-right">{{fieldVal.stats!.max| number:'1.2-2'}}</td>
+            <td class="align-right">{{fieldVal.stats!.total| number:'1.2-2'}}</td>
             }
         </tr>             
         @if(getFilters().field === 'Credit') {  
             <tr [ngClass]="getFieldClass(idx)">
-            <td>Days Remain</td>
+            <td>Status</td>
             @for (month of getReportMonths(); track $index) {   
-                @if(fieldVal.ccDetails[month] != null && fieldVal.ccDetails[month].daysRemain != null){
-                <td class="currency daysRemainHighlight">{{ fieldVal.ccDetails[month].daysRemain }}</td>
+                @if(fieldVal.ccDetails[month] != null && fieldVal.ccDetails[month].status != null){
+                <td class="align-right"                 
+                [class.creditOpen]="fieldVal.ccDetails?.[month]?.status == 'OPEN'" 
+                [class.creditDue]="fieldVal.ccDetails?.[month]?.status == 'DUE'" >
+                {{ fieldVal.ccDetails[month].status.toLowerCase() }}</td>
                 } @else {<td></td>}
             }
             </tr>
@@ -103,7 +110,9 @@
             <td>Closing Date</td>
             @for (month of getReportMonths(); track $index) {   
                 @if(fieldVal.ccDetails[month]){
-                <td>{{ fieldVal.ccDetails[month].closingDate | date: 'MMMM d'}}</td>
+                <td class="align-right"               
+                [class.creditOpen]="fieldVal.ccDetails?.[month]?.status == 'OPEN'" >
+                {{ fieldVal.ccDetails[month].closingDate | date: 'MMMM d'}}</td>
                 } @else {<td></td>}
             }
             </tr>
@@ -111,7 +120,9 @@
             <td>Due Date</td>
             @for (month of getReportMonths(); track $index) {   
                 @if(fieldVal.ccDetails[month]){
-                <td>{{ fieldVal.ccDetails[month].dueDate | date: 'MMMM d'}}</td>
+                <td class="align-right"
+                [class.creditDue]="fieldVal.ccDetails?.[month]?.status == 'DUE'" >
+                {{ fieldVal.ccDetails[month].dueDate | date: 'MMMM d'}}</td>
                 } @else {<td></td>}
             }
             </tr>
@@ -125,7 +136,7 @@
                 [pTooltip]="'view ' + subcategory.count">{{subcategory.name}}</td>
             @for (month of getReportMonths(); track $index) {
             @if(subcategory.monthTotals[month]){
-            <td (click)="details(month, fieldVal.name!, subcategory.name!)" class="currency clickable-cell"
+            <td (click)="details(month, fieldVal.name!, subcategory.name!)" class="align-right clickable-cell"
                 [pTooltip]="'view ' + subcategory.monthCounts[month]">
                 {{subcategory.monthTotals[month] | number:'1.2-2'}}
             </td>
@@ -133,11 +144,11 @@
             @else {<td></td>}
             }
             @if(getFilters().showStats){
-            <td class="currency">{{subcategory.stats!.average1| number:'1.2-2'}}</td>
-            <!-- <td class="currency">{{subcategory.stats!.average2| number:'1.2-2'}}</td> -->
-            <td class="currency">{{subcategory.stats!.min| number:'1.2-2'}}</td>
-            <td class="currency">{{subcategory.stats!.max| number:'1.2-2'}}</td>
-            <td class="currency">{{subcategory.stats!.total| number:'1.2-2'}}</td>
+            <td class="align-right border-left-thick">{{subcategory.stats!.average1| number:'1.2-2'}}</td>
+            <!-- <td class="align-right">{{subcategory.stats!.average2| number:'1.2-2'}}</td> -->
+            <td class="align-right">{{subcategory.stats!.min| number:'1.2-2'}}</td>
+            <td class="align-right">{{subcategory.stats!.max| number:'1.2-2'}}</td>
+            <td class="align-right">{{subcategory.stats!.total| number:'1.2-2'}}</td>
             }
         </tr>
         }

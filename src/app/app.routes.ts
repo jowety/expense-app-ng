@@ -10,6 +10,7 @@ import { BudgetReportComponent } from './component/budget-report/budget-report.c
 import { AccountFormComponent } from './component/account-form/account-form.component';
 import { AccountListComponent } from './component/account-list/account-list.component';
 import { FieldReportComponent } from './component/field-report/field-report.component';
+import { RecurringMonthlyReportComponent } from './component/recurring-monthly-report/recurring-monthly-report.component';
 import { TestComponent } from './component/test/test.component';
 import { RecurringListComponent } from './component/recurring-list/recurring-list.component';
 import { RecurringFormComponent } from './component/recurring-form/recurring-form.component';
@@ -22,6 +23,7 @@ export const routes: Routes = [
 	{ path: 'expenseForm/:editId', component: ExpenseFormComponent, title: "Expense Edit" },
 
 	{ path: 'fieldReport', component: FieldReportComponent, title: "Expense Totals" },
+	{ path: 'recurringMonthlyReport', component: RecurringMonthlyReportComponent, title: "Recurring Monthly Totals" },
 	{ path: 'budgetReport', component: BudgetReportComponent, title: "Budget Report" },
 	
 	{ path: 'accountList', component: AccountListComponent, title: "Accounts" },

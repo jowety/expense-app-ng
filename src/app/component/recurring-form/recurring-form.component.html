@@ -1,6 +1,7 @@
 <div class="title">{{title}}</div>
 <form (ngSubmit)="onSubmit()" #recurrForm="ngForm">
     <div style="width: 500px; padding-top: 10px;">
+        
         <div class="rowdiv">
             <div class="labeldivwide"><label for="payee">Payee: </label></div>
             <div class="valuediv">
@@ -17,24 +18,7 @@
                     class="selector" />
             </div>
         </div>
-        <div class="rowdiv">
-            <div class="labeldivwide"><label for="category">Category: </label></div>
-            <div class="valuediv">
-                <p-select [options]="categories" [(ngModel)]="category" name="category" optionLabel="name"
-                    (onChange)="loadSubs()" required class="selector" dataKey="id" />
-                <p-button label="New" [routerLink]="['/categoryForm']" [queryParams]="{return: '/recurringForm'}"
-                    size="small" pTooltip="New Category" />
-            </div>
-        </div>
-        <div class="rowdiv">
-            <div class="labeldivwide"><label for="subcategory">Subcategory: </label></div>
-            <div class="valuediv">
-                <p-select [options]="subcategories" [(ngModel)]="recur.subcategory" name="subcategory"
-                    optionLabel="name" required class="selector" dataKey="id" />
-                <p-button label="New" [routerLink]="['/subcategoryForm']" [queryParams]="{return: '/recurringForm'}"
-                    size="small" pTooltip="New Subcategory" />
-            </div>
-        </div>
+        
         <div class="rowdiv">
             <div class="labeldivwide"><label for="every">Every: </label></div>
             <div class="valuediv">
@@ -72,20 +56,136 @@
             </div>
         </div>
         <div class="rowdiv">
-            <div class="labeldivwide"><label for="amount">Amount: </label></div>
+            <div class="labeldivwide"><label for="insert">Insert On: </label></div>
             <div class="valuediv">
-                <div class="p-field-with-icon">
-                    <i class="pi pi-dollar custom-input-icon"></i>
-                    <p-inputnumber [(ngModel)]="recur.amount" inputId="amount" mode="decimal" [minFractionDigits]="2"
-                        [maxFractionDigits]="2" name="amount" required />
+                <p-select [options]="getInsertOptions()" [(ngModel)]="recur.insertOption" name="insert" class="selector"
+                    optionLabel="display" optionValue="value" />
+            </div>
+        </div>
+
+        @if (!isSplit) {
+            <div class="rowdiv">
+                <div class="labeldivwide"><label for="category">Category: </label></div>
+                <div class="valuediv">
+                    <p-select [options]="categories" [(ngModel)]="category" name="category" optionLabel="name"
+                        (onChange)="loadSubs()" required class="selector" dataKey="id" />
+                    <p-button label="New" [routerLink]="['/categoryForm']" [queryParams]="{return: '/recurringForm'}"
+                        size="small" pTooltip="New Category" />
                 </div>
+            </div>
+            
+            <div class="rowdiv">
+                <div class="labeldivwide"><label for="subcategory">Subcategory: </label></div>
+                <div class="valuediv">
+                    <p-select [options]="subcategories" [(ngModel)]="recur.subcategory" name="subcategory"
+                        optionLabel="name" required class="selector" dataKey="id" />
+                    <p-button label="New" [routerLink]="['/subcategoryForm']" [queryParams]="{return: '/recurringForm'}"
+                        size="small" pTooltip="New Subcategory" />
+                </div>
+            </div>
+            
+            <div class="rowdiv">
+                <div class="labeldivwide"><label for="amount">Amount: </label></div>
+                <div class="valuediv">
+                    <div class="p-field-with-icon">
+                        <i class="pi pi-dollar custom-input-icon"></i>
+                        <p-inputnumber [(ngModel)]="recur.amount" inputId="amount" mode="decimal" [minFractionDigits]="2"
+                            [maxFractionDigits]="2" name="amount" required />
+                    </div>
+                </div>
+                <p-button label="Split" (onClick)="enableSplit()" size="small" severity="contrast"/>
+            </div>
+
+            <div class="rowdiv">
+                <div class="labeldivwide"><label for="notes">Notes: </label></div>
+                <div class="valuediv">
+                    <input type="text" pInputText [(ngModel)]="recur.notes" name="notes" />
+                </div>
+            </div>
+            
+        } @else {
+            <div class="rowdiv">
+                <div class="labeldivwide"><label for="total">Total Amount: </label></div>
+                <div class="valuediv">
+                    <div class="p-field-with-icon">
+                        <i class="pi pi-dollar custom-input-icon"></i>
+                        <p-inputnumber [(ngModel)]="recur.amount" inputId="total" mode="decimal" [minFractionDigits]="2" 
+                            [maxFractionDigits]="2" name="total" required (ngModelChange)="updateRemain()"/>
+                    </div>
+                </div>
+                <p-button label="Unsplit" (onClick)="removeSplit()" size="small" severity="contrast"/>
+            </div>
+
+            <div class="rowdiv">
+                <div class="labeldivwide"><label for="notes">Notes (Master): </label></div>
+                <div class="valuediv">
+                    <input type="text" pInputText [(ngModel)]="recur.notes" name="notes" />
+                </div>
+            </div>
+
+            @for (split of recur.splits; track $index) {
+                <div class="splitdiv" style="border-left: 3px solid #6366f1; padding-left: 10px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>Split {{$index + 1}} @if($index === 0) { (Auto-Calculated Primary) }</strong>
+                        @if ($index > 1) {
+                            <p-button label="Remove" (onClick)="deleteSplit($index)" size="small" severity="danger" [text]="true"/>
+                        }
+                    </div>
+
+                    <div class="rowdiv">
+                        <div class="labeldivwide"><label>Category: </label></div>
+                        <div class="valuediv">
+                            <p-select [options]="categories" [(ngModel)]="split.category" name="splitcategory-{{$index}}" optionLabel="name"
+                                (onChange)="loadSplitSubs($index)" required class="selector" />
+                        </div>
+                    </div>
+
+                    <div class="rowdiv">
+                        <div class="labeldivwide"><label>Subcategory: </label></div>
+                        <div class="valuediv">
+                            <p-select [options]="split.subcategories" [(ngModel)]="split.subcategory" name="splitsubcategory-{{$index}}" 
+                                optionLabel="name" required class="selector" dataKey="id" />
+                        </div>
+                    </div>
+
+                    <div class="rowdiv">
+                        <div class="labeldivwide"><label>Amount: </label></div>
+                        <div class="valuediv">
+                            <div class="p-field-with-icon">
+                                <i class="pi pi-dollar custom-input-icon"></i>
+                                <p-inputnumber [(ngModel)]="split.amount" inputId="splitamount-{{$index}}" mode="decimal"
+                                    [minFractionDigits]="2" [maxFractionDigits]="2" name="splitamount-{{$index}}" required 
+                                    [disabled]="$index === 0" (ngModelChange)="updateRemain()"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rowdiv">
+                        <div class="labeldivwide"><label>Notes: </label></div>
+                        <div class="valuediv">
+                            <input type="text" pInputText [(ngModel)]="split.notes" name="splitnotes-{{$index}}" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div style="margin: 10px 0; text-align: right;">
+                <p-button label="Add Split" icon="pi pi-plus" (onClick)="addSplit()" size="small" severity="secondary"/>
+            </div>
+        }
+
+        <div class="rowdiv" style="margin-top: 15px;">
+            <div class="labeldivwide"><label for="dateVaries">Date Varies?: </label></div>
+            <div class="valuediv">
+                <p-togglebutton [(ngModel)]="recur.dateVaries" onLabel="Yes" offLabel="No" styleClass="w-24"
+                    name="dateVaries" />
             </div>
         </div>
         <div class="rowdiv">
-            <div class="labeldivwide"><label for="varies">Amount Vaires?: </label></div>
+            <div class="labeldivwide"><label for="amountVaries">Amount Varies?: </label></div>
             <div class="valuediv">
                 <p-togglebutton [(ngModel)]="recur.amountVaries" onLabel="Yes" offLabel="No" styleClass="w-24"
-                    name="varies" />
+                    name="amountVaries" />
             </div>
         </div>
         @if(recur.amountVaries){
@@ -98,19 +198,6 @@
         </div>
         }
         <div class="rowdiv">
-            <div class="labeldivwide"><label for="insert">Insert On: </label></div>
-            <div class="valuediv">
-                <p-select [options]="getInsertOptions()" [(ngModel)]="recur.insertOption" name="insert" class="selector"
-                    optionLabel="display" optionValue="value" />
-            </div>
-        </div>
-        <div class="rowdiv">
-            <div class="labeldivwide"><label for="notes">Notes: </label></div>
-            <div class="valuediv">
-                <input type="text" pInputText [(ngModel)]="recur.notes" name="notes" />
-            </div>
-        </div>
-        <div class="rowdiv">
             <div class="labeldivwide"><label for="inactive">Set Inactive?: </label></div>
             <div class="valuediv">
                 <p-togglebutton [(ngModel)]="recur.inactive" onLabel="Yes" offLabel="No" styleClass="w-24"
@@ -118,12 +205,10 @@
             </div>
         </div>
 
-
         <br />
         <div style="text-align: center;">
             <p-button type="submit" [disabled]="!recurrForm.form.valid" severity="success">Save</p-button>
             <p-button label="Back/Cancel" (onClick)="back()" severity="contrast" />
         </div>
-        <!-- <p-button label="check" (onClick)="check()" /> -->
     </div>
 </form>

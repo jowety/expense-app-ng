@@ -1,0 +1,45 @@
+<div class="card">
+  <div class="header-links" style="margin-bottom:1rem">
+    <p-button [routerLink]="['/recurringList']" label="View List" size="small" severity="info"></p-button>
+  </div>
+  <table class="report">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Subcategory</th>
+        <th *ngFor="let month of months">{{ month }}</th>
+        <th>Year Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="totalRow">
+        <td>Total</td>
+        <td></td>
+        <td *ngFor="let month of months; let i = index" class="currency">
+          {{ formatAmount(report.monthTotals[i]) | number:'1.2-2' }}
+        </td>
+        <td class="currency">{{ formatAmount(report.yearTotal) | number:'1.2-2' }}</td>
+      </tr>
+
+      <ng-container *ngFor="let category of report.subs; let catIdx = index">
+        <tr [ngClass]="getCategoryClass()">
+          <td>{{ category.name }}</td>
+          <td></td>
+          <td *ngFor="let month of months; let i = index" class="currency">
+            {{ formatAmount(category.monthTotals[i]) | number:'1.2-2' }}
+          </td>
+          <td class="currency">{{ formatAmount(category.yearTotal) | number:'1.2-2' }}</td>
+        </tr>
+
+        <tr *ngFor="let subcategory of category.subs; let subIdx = index" [ngClass]="getSubcategoryClass(subIdx)">
+          <td></td>
+          <td class="subcategoryCell">{{ subcategory.name }}</td>
+          <td *ngFor="let month of months; let i = index" class="currency">
+            {{ formatAmount(subcategory.monthTotals[i]) | number:'1.2-2' }}
+          </td>
+          <td class="currency">{{ formatAmount(subcategory.yearTotal) | number:'1.2-2' }}</td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,48 @@
+.report {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: inherit;
+}
+
+.report th,
+.report td {
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #dcdcdc;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.report th {
+  background: #f3f3f3;
+  font-weight: 600;
+}
+
+.totalRow {
+  background-color: #f8f7c1;
+  font-weight: 600;
+}
+
+.categoryRow {
+  background-color: #e1f8f6;
+}
+
+.subcategoryRow {
+  background-color: #ffffff;
+}
+
+.subcategoryRow.oddRow {
+  background-color: rgb(229, 229, 229);
+}
+
+.subcategoryCell {
+  padding-left: 1.5rem;
+}
+
+.oddRow {
+  background-color: rgb(229, 229, 229);
+}
+
+.currency {
+  text-align: right;
+  white-space: nowrap;
+}

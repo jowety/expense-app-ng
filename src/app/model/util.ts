@@ -37,17 +37,19 @@ export class Util {
         return this.weekdayMap[day];
     }
     static getFreqString(recur: Recurring): string {
-        let out = "Every ";
-        if (recur.every > 1) out += recur.every + " ";
-        if (recur.frequency === 'MONTHS' && recur.every == 1) out += 'month';
-        else if (recur.frequency == 'MONTHS' && recur.every > 1) out += 'months';
-        else if (recur.frequency == 'YEARS' && recur.every == 1) out += 'year';
-        else if (recur.frequency == 'YEARS' && recur.every > 1) out += 'years';
-        else if (recur.frequency == 'WEEKS' && recur.every == 1) out += 'week';
-        else if (recur.frequency == 'WEEKS' && recur.every > 1) out += 'weeks';
+        // let out = "Every ";
+        // if (recur.every > 1) out += recur.every + " ";
+        // if (recur.frequency === 'MONTHS' && recur.every == 1) out += 'month';
+        // else if (recur.frequency == 'MONTHS' && recur.every > 1) out += 'months';
+        // else if (recur.frequency == 'YEARS' && recur.every == 1) out += 'year';
+        // else if (recur.frequency == 'YEARS' && recur.every > 1) out += 'years';
+        // else if (recur.frequency == 'WEEKS' && recur.every == 1) out += 'week';
+        // else if (recur.frequency == 'WEEKS' && recur.every > 1) out += 'weeks';
+        let out = recur.frequency + ', every ' + recur.every + ', ';
         if (recur.frequency === 'MONTHS') out += " on the " + Util.getDayOfMonthStr(recur.day);
         else if (recur.frequency === 'YEARS') out += ` on ${recur.month}/${recur.day}`;
         else if (recur.frequency === 'WEEKS') out += ` on ${Util.getWeekday(recur.day)}`;
+        if(recur.dateVaries) out += " (varies)";
         return out;
     }
     static range(start: number, end: number): number[] {

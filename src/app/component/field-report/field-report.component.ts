@@ -45,6 +45,10 @@ export class FieldReportComponent {
 
   load() {
     const year = this.getFilters().year;
+    if(this.getFilters().field == 'Credit'){
+      this.getFilters().showStats = false;
+      this.getFilters().monthSortLR = true;
+    }
     if (year !== null) {
       this.expenseService.getFieldReport(year, this.getFilters().field.toLowerCase()).subscribe(
         data => this.report = data);
@@ -89,18 +93,24 @@ export class FieldReportComponent {
       expFilters.subcategory = subCategory;
       expFilters.account = null;
       expFilters.payee = null;
+      expFilters.showSplits = true;
+      expFilters.closingView = false;
     }       
     else if(this.getFilters().field === 'Account'){ 
       expFilters.account = fieldValue;
       expFilters.category = null;
       expFilters.subcategory = null;
       expFilters.payee = null;
+      expFilters.showSplits = false;
+      expFilters.closingView = false;
     }
     else if(this.getFilters().field === 'Payee') {
       expFilters.payee = fieldValue;
       expFilters.account = null;
       expFilters.category = null;
       expFilters.subcategory = null;
+      expFilters.closingView = false;
+      expFilters.showSplits = false;
     }
     else if(this.getFilters().field === 'Credit'){ 
       expFilters.account = fieldValue;
@@ -108,6 +118,7 @@ export class FieldReportComponent {
       expFilters.subcategory = null;
       expFilters.payee = null;
       expFilters.closingView = true;
+      expFilters.showSplits = false;
     }
     this.router.navigate(['/expenseList']);
   }

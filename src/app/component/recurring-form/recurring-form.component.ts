@@ -17,6 +17,7 @@ import { TooltipModule } from 'primeng/tooltip';
 
 import { ExpenseService } from '../../service/expense.service';
 import { Recurring } from '../../model/recurring';
+import { RecurringSplit } from '../../model/recurring-split';
 import { Account } from '../../model/account';
 import { Payee } from '../../model/payee';
 import { Category } from '../../model/category';
@@ -39,6 +40,10 @@ export class RecurringFormComponent {
   category: Category | null = null;
   categories: Category[] = [];
   subcategories: Subcategory[] = [];
+  
+  // Split State Variables
+  isSplit: boolean = false;
+
   private route = inject(ActivatedRoute);
   editId: string | null = null;
   everys: number[] = Util.range(1, 6);
@@ -52,7 +57,6 @@ export class RecurringFormComponent {
     {value:'WEEK', display:'Week start'}, {value:'DAY', display:'On the day'}
   ]
 
-
   constructor(public expenseService: ExpenseService, public router: Router, private messageService: MessageService,
     private location: Location
   ) {
@@ -61,9 +65,26 @@ export class RecurringFormComponent {
       this.title = "Edit Recurring Expense";
       this.expenseService.getRecurring(this.editId).subscribe(data => {
         this.recur = data;
-        this.category = this.recur.subcategory!.category;
-        this.loadSubs();
-      })
+        
+        // Handle pre-existing splits on edit
+        if (this.recur.splits && this.recur.splits.length > 0) {
+          this.isSplit = true;
+          for (let split of this.recur.splits) {
+            if (split.subcategory?.category) {
+              split.category = split.subcategory.category;
+              this.expenseService.getSubcategories(split.category.id!).subscribe(subData => {
+                split.subcategories = subData;
+              });
+            }
+          }
+        } else {
+          // Standard single load
+          if (this.recur.subcategory) {
+             this.category = this.recur.subcategory.category;
+             this.loadSubs();
+          }
+        }
+      });
     }
   }
 
@@ -77,17 +98,17 @@ export class RecurringFormComponent {
         this.expenseService.getPayee(params['payeeId']).subscribe(result => {
           this.recur.payee = result;
           this.loadPayeeDefaults();
-        })
+        });
       }
       if (params['categoryId']) {
         this.expenseService.getCategory(params['categoryId']).subscribe(result => {
           this.category = result;
-        })
+        });
       }
       if (params['subcategoryId']) {
         this.expenseService.getSubcategory(params['subcategoryId']).subscribe(result => {
           this.recur.subcategory = result;
-        })
+        });
       }
     });
     this.expenseService.getAccounts().subscribe(data => {
@@ -110,6 +131,15 @@ export class RecurringFormComponent {
     }
   }
 
+  loadSplitSubs(index: number) {
+    const split = this.recur.splits[index];
+    if (split?.category?.id) {
+      this.expenseService.getSubcategories(split.category.id).subscribe(data => {
+        split.subcategories = data;
+      });
+    }
+  }
+
   loadPayeeDefaults() {
     if (this.recur.payee) {
       this.recur.account = this.recur.payee.accountDefault;
@@ -119,7 +149,69 @@ export class RecurringFormComponent {
     }
   }
 
+  // --- Split Management Methods ---
+
+  enableSplit() {
+    this.isSplit = true;
+    this.category = null;
+    this.recur.subcategory = null;
+    this.addSplit();
+    this.addSplit();
+    this.updateRemain();
+  }
+
+  removeSplit() {
+    this.isSplit = false;
+    this.recur.splits = [];
+  }
+
+  addSplit() {
+    const newSplit = new RecurringSplit();
+    newSplit.amount = 0;
+    // Pre-populate with component's current category if available
+    newSplit.category = this.category;
+    if (newSplit.category) {
+      this.expenseService.getSubcategories(newSplit.category.id!).subscribe(data => {
+        newSplit.subcategories = data;
+      });
+    }
+    this.recur.splits.push(newSplit);
+    this.updateRemain();
+  }
+
+  deleteSplit(index: number) {
+    this.recur.splits.splice(index, 1);
+    if (this.recur.splits.length < 2) {
+      this.removeSplit();
+    } else {
+      this.updateRemain();
+    }
+  }
+
+  updateRemain() {
+    // Check recur.amount instead of total
+    if (this.recur.amount) {
+      let runningSumOfOthers = 0;
+      for (let i = 1; i < this.recur.splits.length; i++) {
+        runningSumOfOthers += this.recur.splits[i].amount || 0;
+      }
+      if (this.recur.splits.length > 0) {
+        this.recur.splits[0].amount = Number((this.recur.amount - runningSumOfOthers).toFixed(2));
+      }
+    }
+  }
+
+  // --- Submission & Routing ---
+
   onSubmit() {
+    if (this.isSplit && this.recur.amount! <= 0) {
+        this.messageService.add({
+          severity: 'danger', summary: 'ERROR!', life:5000,
+          detail: `Sum of splits is greater than total!`
+        });
+        return;
+    } 
+
     this.expenseService.saveRecurring(this.recur).subscribe(result => {
       this.messageService.add({
         severity: "success", summary: 'Success',
@@ -128,10 +220,12 @@ export class RecurringFormComponent {
       this.router.navigate(['/recurringList']);
     });
   }
+
   forward(route:string){
     this.path.unshift("recurringForm");
     this.router.navigate([route], {queryParams: {path: this.path}});
   }
+
   back(){
     if(this.path.length > 0){
       const back = this.path.shift();
@@ -144,6 +238,8 @@ export class RecurringFormComponent {
     }
     else this.location.back();
   }
+
+  // --- Utility Methods ---
 
   getMonthSelects() {
     return Util.months;

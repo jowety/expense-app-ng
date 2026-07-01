@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router} from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { ActivatedRoute} from '@angular/router';
 
 import { InputNumber } from 'primeng/inputnumber';
@@ -20,7 +20,6 @@ import { Account } from '../../model/account';
 import { Payee } from '../../model/payee';
 import { Category } from '../../model/category';
 import { Subcategory } from '../../model/subcategory';
-import { Split } from '../../model/split';
 
 @Component({
   selector: 'app-expense-form',
@@ -30,6 +29,7 @@ import { Split } from '../../model/split';
   styleUrl: './expense-form.component.scss'
 })
 export class ExpenseFormComponent {
+  expenseForm!: FormGroup;
   accounts: Account[] = [];
   payees: Payee[] = [];
   categories: Category[] = [];
@@ -37,21 +37,40 @@ export class ExpenseFormComponent {
   private route = inject(ActivatedRoute);
   editId: string | null = null;
   isSplit: boolean = false;
-  splits: Split[] = [];
-  total: number | null = null;
   title: string = "New Expense";
 
-  constructor(public expenseService: ExpenseService, public router: Router, private messageService: MessageService) {
+  constructor(public expenseService: ExpenseService, public router: Router, private messageService: MessageService,
+    private fb: FormBuilder) {
     this.editId = this.route.snapshot.paramMap.get('editId');
     if (this.editId) {
       this.expenseService.getExpense(this.editId).subscribe(data => {
+        this.title = "Edit Expense";
         this.expenseService.expenseEdit = data;
         this.expenseService.expenseEdit.date = new Date((data.date as string) + "T00:00:00");
-        this.expenseService.expenseEditCategory = this.expenseService.expenseEdit.subcategory!.category;
-        this.loadSubs();
-        this.title = "Edit Expense";
+        this.loadEditData();
       })
     }
+    else if(this.expenseService.expenseEdit) {
+      this.loadEditData();
+    }    
+  }
+  loadEditData(){
+    let expense = this.expenseService.expenseEdit;
+      if(expense.subcategory) {
+        this.expenseService.expenseEditCategory = expense.subcategory.category;
+        this.loadSubs();
+      }
+      if(expense.splits && expense.splits.length > 0) {
+        this.isSplit = true;
+        for (let split of expense.splits) {
+          if(split.subcategory?.category) {
+            split.category = split.subcategory.category;
+            this.expenseService.getSubcategories(split.subcategory!.category.id!).subscribe(data => {
+              split.subcategories = data;
+            });
+          }
+        }
+      }
   }
   ngOnInit() {
     this.expenseService.getAccounts().subscribe(data => {
@@ -98,49 +117,28 @@ export class ExpenseFormComponent {
     expense.date = (expense.date as Date).toISOString().slice(0, 10);
       let action:string = expense.id? 'updated': 'saved';
       let severity:string = expense.id? 'info': 'success';
-    if (!this.isSplit) {
-      this.expenseService.saveExpense(expense).subscribe(result => {
-        this.messageService.add({
-          severity: severity, summary: 'Success',
-          detail: `Expense for $${expense.amount} to ${expense.payee!.name} ${action}!`
-        });
-        this.expenseService.expenseEdit = new Expense();
-        this.router.navigate(['/expenseList']);
-      });
-    }
-    else {
-      if (expense.amount! <= 0) {
+    if (this.isSplit && expense.amount! <= 0) {
         this.messageService.add({
           severity: 'danger', summary: 'ERROR!', life:5000,
           detail: `Sum of splits is greater than total!`
         });
-      }
-      else {
-        this.expenseService.saveExpense(expense).subscribe(result => {
-          this.messageService.add({
-            severity: 'success', summary: 'Success', life:5000,
-            detail: `Expense for $${expense.amount} to ${expense.payee!.name} ${action}!`
-          });
-        });
-        for (let split of this.splits) {
-          let exp: Expense = new Expense();
-          exp.account = expense.account;
-          exp.date = expense.date;
-          exp.payee = expense.payee;
-          exp.subcategory = split.subcategory;
-          exp.amount = split.amount;
-          exp.notes = split.notes;
-          this.expenseService.saveExpense(exp).subscribe(result => {
-            this.messageService.add({
-              severity: 'success', summary: 'Success', life:5000,
-              detail: `Expense for $${exp.amount} to ${exp.payee!.name} saved!`
-            });
-          });
-        }
-        this.expenseService.expenseEdit = new Expense();
-        this.router.navigate(['/expenseList']);
+        return;
+    }    
+    if (this.isSplit) {
+      for (let split of expense.splits) {
+        split.date = expense.date;
+        split.account = expense.account;
+        split.payee = expense.payee;
       }
     }
+    this.expenseService.saveExpense(expense).subscribe(result => {
+      this.messageService.add({
+        severity: severity, summary: 'Success',
+        detail: `Expense for $${expense.amount} to ${expense.payee!.name} ${action}!`
+      });
+      this.expenseService.expenseEdit = new Expense();
+      this.router.navigate(['/expenseList']);
+    });
   }
   loadSubs() {
     if (this.expenseService.expenseEditCategory) {
@@ -150,9 +148,10 @@ export class ExpenseFormComponent {
     }
   }
   loadSplitSubs(index: number) {
-    if (this.splits[index].category) {
-      this.expenseService.getSubcategories(this.splits[index].category.id!).subscribe(data => {
-        this.splits[index].subcategories = data;
+    const split = this.getExpense().splits[index];
+    if (split?.category?.id) {
+      this.expenseService.getSubcategories(split.category.id).subscribe(data => {
+        split.subcategories = data;
       });
     }
   }
@@ -167,24 +166,61 @@ export class ExpenseFormComponent {
   }
   enableSplit() {
     this.isSplit = true;
-    this.splits.push(new Split());
-    this.total = this.expenseService.expenseEdit!.amount;
+    this.getExpense().parent = true;
+    this.getExpense().category = null;
+    this.getExpense().subcategory = null;
+    this.addSplit();
+    this.addSplit();
   }
   removeSplit() {
     this.isSplit = false;
-    this.splits = [];
-    this.expenseService.expenseEdit!.amount = this.total;
+    this.getExpense().category = this.expenseService.expenseEditCategory;
+    this.getExpense().parent = false;
+    this.getExpense().splits = [];
+  }
+  // 4. Push a new blank expense into your split array
+  addSplit() {
+    const newSplit = new Expense();
+    newSplit.amount = 0;
+    newSplit.date = this.getExpense().date;
+    newSplit.account = this.getExpense().account;
+    newSplit.payee = this.getExpense().payee;
+    newSplit.category = this.expenseService.expenseEditCategory;
+    if(newSplit.category) {
+      this.expenseService.getSubcategories(newSplit.category.id!).subscribe(data => {
+        newSplit.subcategories = data;
+      });
+    }
+    newSplit.parent = false;
+    this.getExpense().splits.push(newSplit);
+    this.updateRemain();
+  }
+  // 5. Delete a specific split row from the middle
+  deleteSplit(index: number) {
+    this.getExpense().splits.splice(index, 1);
+    if (this.getExpense().splits.length < 2) {
+      this.removeSplit(); // Fallback if they delete down to nothing
+    } else {
+      this.updateRemain();
+    }
   }
   updateRemain() {
-    if (this.total) {
-      this.expenseService.expenseEdit!.amount = this.total;
-      for (let split of this.splits) {
-        if (split.amount) this.expenseService.expenseEdit!.amount! -= split.amount;
+    if (this.getExpense().amount) {
+      let runningSumOfOthers = 0;
+      
+      // Sum up the amounts of Split 2, Split 3, Split 4, etc.
+      for (let i = 1; i < this.getExpense().splits.length; i++) {
+        runningSumOfOthers += this.getExpense().splits[i].amount || 0;
       }
+      
+      // Split 1 absorbs the remainder (Total - everything else)
+      if (this.getExpense().splits.length > 0) {
+        this.getExpense().splits[0].amount = Number((this.getExpense().amount! - runningSumOfOthers).toFixed(2));
+      }      
     }
   }
   check() {
-    console.log("Expense: " + JSON.stringify(this.expenseService.expenseEdit!));
-    console.log("Splits: " + JSON.stringify(this.splits));
+    console.log("Expense: " + JSON.stringify(this.getExpense()));
+    console.log("Splits: " + JSON.stringify(this.getExpense().splits));
   }
 }

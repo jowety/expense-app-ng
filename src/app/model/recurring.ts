@@ -1,5 +1,6 @@
 import { Account } from "./account";
 import { Payee } from "./payee";
+import { RecurringSplit } from "./recurring-split";
 import { Subcategory } from "./subcategory";
 
 export class Recurring {
@@ -9,6 +10,7 @@ export class Recurring {
     subcategory: Subcategory | null = null;
     amount: number | null = null;
     amountVaries: boolean = false;
+    dateVaries: boolean = false;
     useLastAmount: boolean = false;
     inactive: boolean = false;
     every: number = 1;
@@ -18,4 +20,6 @@ export class Recurring {
     insertOption: string = 'MONTH';
     notes: string | null = null;
     startDate: Date | string | null = null;
+    splits: RecurringSplit[] = [];
+    freqString: string | null = null;
 }

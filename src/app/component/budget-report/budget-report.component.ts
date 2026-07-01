@@ -6,10 +6,12 @@ import { ExpenseService } from '../../service/expense.service';
 import { BudgetReport } from '../../model/budget-report';
 import { SelectModule } from 'primeng/select';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { Router} from '@angular/router';
 
 @Component({
   selector: 'app-budget-report',
-  imports: [TableModule, CommonModule, SelectModule, FloatLabelModule, FormsModule],
+  imports: [TableModule, CommonModule, SelectModule, FloatLabelModule, FormsModule, ToggleSwitchModule],
   templateUrl: './budget-report.component.html',
   styleUrl: './budget-report.component.scss'
 })
@@ -20,8 +22,10 @@ export class BudgetReportComponent {
   months: string[] = [];
   month: string = new Date().toLocaleString('default', { month: 'long' });
   report: BudgetReport = new BudgetReport();
+  collapse: boolean = false;
+  showAll: boolean = false;
 
-  constructor(private service: ExpenseService) {
+  constructor(private service: ExpenseService, public router: Router) {
   }
 
   ngOnInit() {
@@ -43,4 +47,23 @@ export class BudgetReportComponent {
   load() {
     this.service.getBudgetReport(this.year, this.month).subscribe(data => this.report = data);
   }
+
+  visibleSubcategories(category: any) {
+    if (!category || !category.subcategories) { return []; }
+    return this.showAll ? category.subcategories : category.subcategories.filter((s: any) => !!s.total);
+  }
+
+    details(category:string, subCategory:string | null){
+      //pass in month, fieldValue, subCategory if present
+      //set into filters
+      let expFilters = this.service.expenseFilters;
+      expFilters.year = this.year;
+      expFilters.month = this.month;
+      expFilters.category = category;
+      expFilters.subcategory = subCategory;
+      expFilters.account = null;
+      expFilters.payee = null;
+      expFilters.showSplits = true;
+      this.router.navigate(['/expenseList']);
+    }
 }

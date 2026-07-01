@@ -25,6 +25,8 @@
             [rows]="getFilters().rows" [totalRecords]="total" [showPageLinks]="false"/>
         <label for="future">Hide Future:</label>
         <p-toggleswitch [(ngModel)]="getFilters().hideFuture" (onChange)="pageChange(null)"/>
+        <label for="splits">Show Splits:</label>
+        <p-toggleswitch [(ngModel)]="getFilters().showSplits" (onChange)="pageChange(null)"/>
     </div>
     <p-table [value]="expenses" [paginator]="false" [lazy]="true" #myTable dataKey="id" stripedRows
         (onLazyLoad)="pageChange($event)" [sortField]="getFilters().sortField" [sortOrder]="getFilters().sortOrder">
@@ -83,10 +85,15 @@
         </ng-template>
         <ng-template #body let-exp>
             <tr>
-                <td>{{ exp.date | date:'shortDate' }}</td>
+                <td>{{ exp.date | date:'shortDate' }}
+                    @if (exp.dateEstimate) {<i class="pi pi-exclamation-circle" pTooltip="Estimate"
+                    style="font-size: 1rem;"></i>} 
+                </td>
                 <td>{{ exp.amount | currency: 'USD'}}
                     @if (exp.estimate) {<i class="pi pi-exclamation-circle" pTooltip="Estimate"
                     style="font-size: 1rem;"></i>}    
+                    @if (exp.parentId) {<i class="pi pi-receipt" pTooltip="Split"
+                    style="font-size: 1rem;"></i>}
                 </td>
                 <td>{{ exp.payee }}
                     @if (exp.autoInsert) {<i class="pi pi-replay" pTooltip="Recurring"
@@ -97,15 +104,17 @@
                 <td>{{ exp.subcategory }}</td>
                 <td>{{ exp.notes }}</td>
                 <td>
-                    <p-button [routerLink]="['/expenseForm', exp.id]" pTooltip="Edit" severity="info" size="small" tooltipPosition="left"> 
+                    <p-button [routerLink]="['/expenseForm', exp.parentId != null ? exp.parentId : exp.id]" pTooltip="Edit" severity="info" size="small" tooltipPosition="left"> 
                         <i class="pi pi-pencil"></i>
                     </p-button>
                     <p-button (click)="copy(exp.id)" pTooltip="Copy" severity="info" size="small" tooltipPosition="left"> 
                         <i class="pi pi-clone"></i>
                     </p-button>
+                    @if (exp.parentId == null) {
                     <p-button (click)="confirmDelete(exp, $event)" pTooltip="Delete" tooltipPosition="left" severity="danger" size="small">
                         <i class="pi pi-trash"></i>
                     </p-button>
+                    }
                 </td>
             </tr>
         </ng-template>

@@ -16,4 +16,7 @@ export class ExpenseView {
         closingYear: number | null = null;
         closingMonthNumber: number | null = null;
         closingMonthString: string | null = null;
+        cleared: boolean = false;
+        parent: boolean = false;
+        parentId: number | null = null;
 }
